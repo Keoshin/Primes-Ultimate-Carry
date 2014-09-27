@@ -19,7 +19,7 @@ namespace Primes_Ultimate_Carry
 			//Ghost,
 			Heal,
 			//Revive,
-			//Cleanse,
+			Cleanse,
 			Smite,
 			Barrier,
 			//Teleport,
@@ -77,6 +77,7 @@ namespace Primes_Ultimate_Carry
 			SummonerList.Add(new SummonerSpell("summonerdot", Summoner.Ignite));
 			SummonerList.Add(new SummonerSpell("summonerexhaust", Summoner.Exhaust));
 			SummonerList.Add(new SummonerSpell("summonersmite", Summoner.Smite));
+			SummonerList.Add(new SummonerSpell("summonerboost", Summoner.Cleanse));
 
 			foreach(var spell in SummonerList.Where(spell => spell.IsActive()))
 			{
@@ -210,6 +211,10 @@ namespace Primes_Ultimate_Carry
 					if(PUC.Player.Health <= maxDps * PUC.Menu.Item("act_exhoust_killme").GetValue<Slider>().Value)
 						spell.CastSpell(maxDpsHero);
 					break;
+					case Summoner.Cleanse:
+					if(BuffnamesCC.Any(bufftype => PUC.Player.HasBuffOfType(bufftype) && PUC.Menu.Item("act_cleanse_" + bufftype).GetValue< bool>()))
+						spell.CastSpell();
+					break;
 			}
 	}
 
@@ -275,6 +280,9 @@ namespace Primes_Ultimate_Carry
 						break;
 					case Summoner.Exhaust:
 						LoadExhoustMenu(menu);
+						break;
+					case Summoner.Cleanse:
+						LoadCleanseMenu(menu);
 						break;
 				}
 			}
@@ -343,6 +351,17 @@ namespace Primes_Ultimate_Carry
 					menu.SubMenu("act_exhoust").AddItem(new MenuItem("act_exhoust_enemy_" + enemy.ChampionName, "Use on " + enemy.ChampionName).SetValue(true));
 				}
 				menu.SubMenu("act_exhoust").AddItem(new MenuItem("act_exhoust_sep4", "========="));
+			}
+
+			private void LoadCleanseMenu(Menu menu)
+			{
+				menu.AddSubMenu(new Menu("Cleanse", "act_cleanse"));
+				menu.SubMenu("act_cleanse").AddItem(new MenuItem("act_cleanse_sep0", "====== Conditions"));
+				foreach(var buffname in BuffnamesCC)
+				{
+					menu.SubMenu("act_cleanse").AddItem(new MenuItem("act_cleanse_" + buffname, "Anti " + buffname).SetValue(true));
+				}
+				menu.SubMenu("act_cleanse").AddItem(new MenuItem("act_cleanse_sep4", "========="));
 			}
 		}
 
@@ -429,7 +448,7 @@ namespace Primes_Ultimate_Carry
 
 						// Dervish Blade, Mercurial Scimitar, Quicksilver Sash
 						if(item.Id == 3137 || item.Id == 3139 || item.Id == 3140)
-							if(BuffnamesCC.Any(bufftype => PUC.Player.HasBuffOfType(bufftype)))
+							if(BuffnamesCC.Any(bufftype => PUC.Player.HasBuffOfType(bufftype) && PUC.Menu.Item("act_debuff_" + bufftype).GetValue<bool>() && CleanseIsDown()))
 								item.CastItem();
 
 						// Mikael's Crucible
@@ -460,6 +479,15 @@ namespace Primes_Ultimate_Carry
 						}
 						break;
 				}
+			}
+
+			private static bool CleanseIsDown()
+			{
+				var spell = PUC.Player.SummonerSpellbook.Spells.FirstOrDefault(x => x.Name.ToLower() == "summonerboost");
+				var spellSlot = spell != null ? spell.Slot : SpellSlot.Unknown;
+				if (spellSlot == SpellSlot.Unknown)
+					return true;
+				return ObjectManager.Player.SummonerSpellbook.CanUseSpell(spellSlot) != SpellState.Ready;
 			}
 		}
 

@@ -30,6 +30,7 @@ namespace Primes_Ultimate_Carry
 			Game.PrintChat("If to many false reports couse you cant read ");
 			Game.PrintChat("i will close open beta again.");
 			Game.PrintChat("=================================");
+
 			Player = ObjectManager.Player;
 			Menu = new Menu("Primes Ultimate Carry", Player.ChampionName + "UltimateCarry", true);
 			
