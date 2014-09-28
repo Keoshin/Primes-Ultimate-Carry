@@ -10,8 +10,6 @@ namespace Primes_Ultimate_Carry
 {
 	internal class Jungle
 	{
-		private static double GameTimeOffset;
-
 		private static readonly List<JungleCamp> JungleCamps = new List<JungleCamp>
 		{
 			new JungleCamp //Baron
@@ -238,8 +236,6 @@ namespace Primes_Ultimate_Carry
 			Game.OnGameUpdate += OnUpdate;
 			GameObject.OnCreate += ObjectOnCreate;
 			GameObject.OnDelete += ObjectOnDelete;
-
-			GameTimeOffset = Game.Time;
 		}
 
 		private static void OnUpdate(EventArgs args)
@@ -256,21 +252,24 @@ namespace Primes_Ultimate_Carry
 				{
 					if (minionCamp.State != JungleCampState.Dead)
 						continue;
-					// wait till jodus support original gametime todo
-					//if(Game.Time < minionCamp.SpawnTime.TotalSeconds )
-					//{
-					//	TimeSpan time = TimeSpan.FromSeconds(minionCamp.SpawnTime.TotalSeconds - Game.Time - GameTimeOffset);
-					//	Vector2 pos = Drawing.WorldToMinimap(minionCamp.Position);
-					//	string display = string.Format("{0}:{1:D2}", time.Minutes, time.Seconds);
-					//	Drawing.DrawText(pos.X - display.Length * 3, pos.Y - 5, Color.White, display);
-					//	continue;
-					//}
+
+					TimeSpan time;
+					Vector2 pos;
+					string display;
+					if(Game.ClockTime < minionCamp.SpawnTime.TotalSeconds)
+					{
+						time = TimeSpan.FromSeconds(minionCamp.SpawnTime.TotalSeconds - Game.ClockTime);
+						pos = Drawing.WorldToMinimap(minionCamp.Position);
+						display = string.Format("{0}:{1:D2}", time.Minutes, time.Seconds);
+						Drawing.DrawText(pos.X - display.Length * 3, pos.Y - 5, Color.White, display);
+						continue;
+					}
 					var delta = Game.Time - minionCamp.ClearTick;
 					if (!(delta < minionCamp.RespawnTimer.TotalSeconds)) 
 						continue;
-					var time = TimeSpan.FromSeconds(minionCamp.RespawnTimer.TotalSeconds - delta);
-					var pos = Drawing.WorldToMinimap(minionCamp.Position);
-					var display = string.Format("{0}:{1:D2}", time.Minutes, time.Seconds);
+					time = TimeSpan.FromSeconds(minionCamp.RespawnTimer.TotalSeconds - delta);
+					pos = Drawing.WorldToMinimap(minionCamp.Position);
+					display = string.Format("{0}:{1:D2}", time.Minutes, time.Seconds);
 					Drawing.DrawText(pos.X - display.Length*3, pos.Y - 5, Color.White, display);
 				}
 
@@ -302,13 +301,12 @@ namespace Primes_Ultimate_Carry
 						allDead = false;
 				}
 
-				// wait till jodus support original gametime todo
-				//if(Game.Time - GameTimeOffset < camp.SpawnTime.TotalSeconds)
-				//{
-				//	camp.State = JungleCampState.Dead;
-				//	camp.ClearTick = 0.0f;
-				//	continue;
-				//}
+				if(Game.ClockTime < camp.SpawnTime.TotalSeconds)
+				{
+					camp.State = JungleCampState.Dead;
+					camp.ClearTick = 0.0f;
+					continue;
+				}
 
 				switch (camp.State)
 				{

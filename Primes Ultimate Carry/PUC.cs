@@ -52,12 +52,12 @@ namespace Primes_Ultimate_Carry
 			var activatorMenu = new Menu("Primes Activator", "Primes_Activator");
 			Activator.AddtoMenu(activatorMenu);
 
-			if(Utility.Map.GetMap()._MapType == Utility.Map.MapType.SummonersRift ||
-				Utility.Map.GetMap()._MapType == Utility.Map.MapType.TwistedTreeline)
-			{
-				var tarzanMenu = new Menu("Primes Tarzan", "Primes_Tarzan");
-				Jungle.AddtoMenu(tarzanMenu);
-			}
+			//if(Utility.Map.GetMap()._MapType == Utility.Map.MapType.SummonersRift ||
+			//	Utility.Map.GetMap()._MapType == Utility.Map.MapType.TwistedTreeline)
+			//{
+			//	var tarzanMenu = new Menu("Primes Tarzan", "Primes_Tarzan");
+			//	Jungle.AddtoMenu(tarzanMenu);
+			//}
 
 			LoadChampionPlugin();
 
@@ -88,11 +88,11 @@ namespace Primes_Ultimate_Carry
 			TargetSelector.Draw();
 			SideBar.Draw();
 			Orbwalker.Draw();
-			if(Utility.Map.GetMap()._MapType == Utility.Map.MapType.SummonersRift ||
-				Utility.Map.GetMap()._MapType == Utility.Map.MapType.TwistedTreeline)
-			{
-				Jungle.Draw();
-			}
+			//if(Utility.Map.GetMap()._MapType == Utility.Map.MapType.SummonersRift ||
+			//	Utility.Map.GetMap()._MapType == Utility.Map.MapType.TwistedTreeline)
+			//{
+			//	Jungle.Draw();
+			//}
 			Activator.Draw();
 		}
 	}

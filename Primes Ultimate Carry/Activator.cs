@@ -460,9 +460,7 @@ namespace Primes_Ultimate_Carry
 							item.CastItem(friend);
 						}
 						break;
-						case Database.ActiveItem.ItemType.Offensive:
-
-
+					case Database.ActiveItem.ItemType.Offensive:
 						// Muramana
 						if(item.Id == 3042 || item.Id == 3043)
 						{
@@ -470,12 +468,62 @@ namespace Primes_Ultimate_Carry
 							var muramanaNeeded = false;
 							if(PUC.Player.Buffs.Any(buff => PUC.Player.HasBuff(item.Name)))
 								muramanaActive = true;
-							if(Orbwalker.CurrentMode  == Orbwalker.Mode.Combo ||
-							Orbwalker.CurrentMode == Orbwalker.Mode.Harass)
+							if(Orbwalker.CurrentMode == Orbwalker.Mode.Combo &&
+								PUC.Menu.Item("act_item_" + item.Id + "_useCombo").GetValue<bool>() ||
+								Orbwalker.CurrentMode == Orbwalker.Mode.Harass &&
+								PUC.Menu.Item("act_item_" + item.Id + "_useHarass").GetValue<bool>())
 								if(Utility.CountEnemysInRange((int)PUC.Player.AttackRange + 100) >= 1)
 									muramanaNeeded = true;
 							if((muramanaNeeded && !muramanaActive) || (!muramanaNeeded && muramanaActive))
 								item.CastItem();
+						}
+						// Youmuu's Ghostblade
+						if(item.Id == 3142)
+						{
+							if (Orbwalker.CurrentMode == Orbwalker.Mode.Combo &&
+							    PUC.Menu.Item("act_item_" + item.Id + "_useCombo").GetValue<bool>() ||
+							    Orbwalker.CurrentMode == Orbwalker.Mode.Harass &&
+							    PUC.Menu.Item("act_item_" + item.Id + "_useHarass").GetValue<bool>())
+							{
+								if (TargetSelector.GetAATarget() != null)
+									item.CastItem();
+							}
+						}
+						// List below
+						if(item.Id == 3077 || item.Id == 3074 || item.Id == 3146 || item.Id == 3144 || item.Id == 3153 || item.Id == 3128)
+						{
+							var range = 0;
+							var onenemy = true;
+							switch (item.Id)
+							{
+								case 3074:
+								case 3077:
+									range = 400;
+									onenemy = false;
+									break;
+								case 3146:
+									range = 700;
+									break;
+								case 3153:
+								case 3144:
+									range = 450;
+									break;
+								case 3128:
+									range = 750;
+									break;
+							}
+
+							if(Orbwalker.CurrentMode == Orbwalker.Mode.Combo &&
+								PUC.Menu.Item("act_item_" + item.Id + "_useCombo").GetValue<bool>() ||
+								Orbwalker.CurrentMode == Orbwalker.Mode.Harass &&
+								PUC.Menu.Item("act_item_" + item.Id + "_useHarass").GetValue<bool>())
+							{
+								if(TargetSelector.GetTarget(range) != null)
+									if(onenemy)
+										item.CastItem(TargetSelector.GetTarget(range));
+									else
+										item.CastItem();
+							}
 						}
 						break;
 				}
