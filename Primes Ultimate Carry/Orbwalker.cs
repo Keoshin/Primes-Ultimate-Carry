@@ -300,22 +300,22 @@ namespace Primes_Ultimate_Carry
 			}
 		}
 
-		public void DisableAttack()
+		public static void DisableAttack()
 		{
 			_attack = false;
 		}
 
-		public void EnableAttack()
+		public static void EnableAttack()
 		{
 			_attack = true;
 		}
 
-		public void DisableMoving()
+		public static void DisableMoving()
 		{
 			_moving = false;
 		}
 
-		public void EnableMoving()
+		public static void EnableMoving()
 		{
 			_moving = true;
 		}

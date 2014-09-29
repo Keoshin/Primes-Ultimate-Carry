@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Drawing;
+using System.Collections.Specialized;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -13,9 +13,16 @@ namespace Primes_Ultimate_Carry
 	// ReSharper disable once InconsistentNaming
 	class Champion_Lucian : Champion
 	{
+		public Spell Q2;
 		public bool HavePassiveUp;
 		public int Delay = 150;
 		public int DelayTick = 0;
+
+		public bool RActive;
+		public int SpellCastetTick;
+		public bool CanUseSpells = true;
+		public bool WaitingForBuff = false;
+		public bool GainBuff = false;
 
 		public Champion_Lucian()
 		{
@@ -32,7 +39,10 @@ namespace Primes_Ultimate_Carry
 		private void SetSpells()
 		{
 			Q = new Spell(SpellSlot.Q, 675);
-			Q.SetTargetted(0.5f,float.MaxValue);
+			Q.SetTargetted(0.5f, float.MaxValue);
+
+			Q2 = new Spell(SpellSlot.Q, 1100);
+			Q2.SetSkillshot(0.5f, 5f, float.MaxValue, true, SkillshotType.SkillshotLine);
 
 			W = new Spell(SpellSlot.W, 1000);
 			W.SetSkillshot(0.3f, 80f, 1600, true, SkillshotType.SkillshotLine);
@@ -45,24 +55,32 @@ namespace Primes_Ultimate_Carry
 
 		private void LoadMenu()
 		{
+			ChampionMenu.AddSubMenu(new Menu("Modes", PUC.Player.ChampionName + "Modes"));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Modes").AddItem(new MenuItem("sep0", "====== Modes"));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Modes").AddItem(new MenuItem("use_Mode", "= Mode").SetValue(new StringList(new[] { "Gangster", "Gentlemen", "Hybrid" })));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Modes").AddItem(new MenuItem("sep1", "========="));
+
+
 			ChampionMenu.AddSubMenu(new Menu("Combo", PUC.Player.ChampionName + "Combo"));
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Combo").AddItem(new MenuItem("sep0", "====== Combo"));
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Combo").AddItem(new MenuItem("useQ_Combo", "= Use Q").SetValue(true));
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Combo").AddItem(new MenuItem("useW_Combo", "= Use W").SetValue(true));
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Combo").AddItem(new MenuItem("useE_Combo", "= Use E").SetValue(true));
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Combo").AddItem(new MenuItem("useE_Combo_maxrange", "= E MaxRange to Enemy").SetValue(new Slider(1100, 2000, 500)));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Combo").AddItem(new MenuItem("useR_Combo", "= Use R").SetValue(true));
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Combo").AddItem(new MenuItem("useR_Combo_Filler", "= R if rest on CD").SetValue(true));
-			// R on Groups todo
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Combo").AddItem(new MenuItem("sep1", "========="));
 
 			ChampionMenu.AddSubMenu(new Menu("Harass", PUC.Player.ChampionName + "Harass"));
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Harass").AddItem(new MenuItem("sep0", "====== Harass"));
+			AddManaManager(ChampionMenu.SubMenu(PUC.Player.ChampionName + "Harass"), "ManaManager_Harass", 40);
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Harass").AddItem(new MenuItem("useQ_Harass", "= Use Q").SetValue(true));
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Harass").AddItem(new MenuItem("useW_Harass", "= Use W").SetValue(true));
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Harass").AddItem(new MenuItem("sep1", "========="));
 
 			ChampionMenu.AddSubMenu(new Menu("LaneClear", PUC.Player.ChampionName + "LaneClear"));
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "LaneClear").AddItem(new MenuItem("sep0", "====== LaneClear"));
+			AddManaManager(ChampionMenu.SubMenu(PUC.Player.ChampionName + "LaneClear"), "ManaManager_LaneClear", 20);
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "LaneClear").AddItem(new MenuItem("useQ_LaneClear", "= Use Q").SetValue(true));
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "LaneClear").AddItem(new MenuItem("useW_LaneClear", "= Use W").SetValue(true));
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "LaneClear").AddItem(new MenuItem("useE_LaneClear", "= Use E").SetValue(true));
@@ -95,13 +113,13 @@ namespace Primes_Ultimate_Carry
 
 		private void OnProcessSpell(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
 		{
-			if (!sender.IsMe) 
+			if(!sender.IsMe)
 				return;
-			switch (args.SData.Name)
+			switch(args.SData.Name)
 			{
 				case "LucianQ":
 					HavePassiveUp = true;
-					Utility.DelayAction.Add(500 , SetPassive);
+					Utility.DelayAction.Add(500, SetPassive);
 					break;
 				case "LucianW":
 					HavePassiveUp = true;
@@ -116,7 +134,7 @@ namespace Primes_Ultimate_Carry
 					Utility.DelayAction.Add(500, SetPassive);
 					break;
 				case "LucianPassiveAttack":
-					Utility.DelayAction.Add( 50, SetPassive);
+					Utility.DelayAction.Add(50, SetPassive);
 					break;
 			}
 		}
@@ -134,7 +152,7 @@ namespace Primes_Ultimate_Carry
 				Utility.DelayAction.Add(100, SetPassive);
 		}
 
-		public Vector3 runwardposition(Vector3  unit, int range)
+		public Vector3 HitPosition(Vector3 unit, int range)
 		{
 			var me = ObjectManager.Player.Position;
 			var mouse = unit;
@@ -145,7 +163,7 @@ namespace Primes_Ultimate_Carry
 		}
 
 		private void OnDraw(EventArgs args)
-		{			
+		{
 			if(ChampionMenu.Item("Draw_Disabled").GetValue<bool>())
 				return;
 
@@ -168,24 +186,207 @@ namespace Primes_Ultimate_Carry
 
 		private void OnUpdate(EventArgs args)
 		{
-			switch(Orbwalker.CurrentMode)
+			switch(PUC.Menu.Item("use_Mode").GetValue<StringList>().SelectedIndex)
 			{
-				case Orbwalker.Mode.Combo:
-					Combo();
+				case 1:
+					switch(Orbwalker.CurrentMode)
+					{
+						case Orbwalker.Mode.Combo:
+							ComboGentleMan();
+							break;
+						case Orbwalker.Mode.Harass:
+							HarassGentleMan();
+							break;
+						case Orbwalker.Mode.LaneClear:
+							LaneClearGentleMan();
+							break;
+						case Orbwalker.Mode.RunlikeHell:
+							RunlikeHellGentleMan();
+							break;
+					}
 					break;
-				case Orbwalker.Mode.Harass:
-					Harass();
+				case 0:
+					BuffCheck();
+					UltCheck();
+
+					switch(Orbwalker.CurrentMode)
+					{
+						case Orbwalker.Mode.Combo:
+							if(ChampionMenu.Item("useE_Combo").GetValue<bool>())
+								GansterCastE();
+							if(ChampionMenu.Item("useQ_Combo").GetValue<bool>())
+								GansterCastQEnemy();
+							if(ChampionMenu.Item("useW_Combo").GetValue<bool>())
+								GansterCastWEnemy();
+							if(ChampionMenu.Item("useR_Combo").GetValue<bool>() ||
+								ChampionMenu.Item("useR_Combo_Filler").GetValue<bool>())
+								CastREnemy();
+							break;
+						case Orbwalker.Mode.Harass:
+							if(ChampionMenu.Item("useQ_Harass").GetValue<bool>() && ManamanagerAllowCast("ManaManager_Harras"))
+								GansterCastQEnemy();
+							if(ChampionMenu.Item("useW_Harass").GetValue<bool>() && ManamanagerAllowCast("ManaManager_Harras"))
+								GansterCastWEnemy();
+							break;
+						case Orbwalker.Mode.LaneClear:
+							if(ChampionMenu.Item("useE_LaneClear").GetValue<bool>() && ManamanagerAllowCast("ManaManager_LaneClear"))
+								GansterCastE();
+							if(ChampionMenu.Item("useQ_LaneClear").GetValue<bool>() && ManamanagerAllowCast("ManaManager_LaneClear"))
+							{
+								GansterCastQEnemy();
+								GansterCastQMinion();
+							}
+							if(ChampionMenu.Item("useW_LaneClear").GetValue<bool>() && ManamanagerAllowCast("ManaManager_LaneClear"))
+							{
+								GansterCastWEnemy();
+								GansterCastWMinion();
+							}
+							break;
+						case Orbwalker.Mode.RunlikeHell:
+							RunlikeHellGentleMan();
+							break;
+					}
 					break;
-				case Orbwalker.Mode.LaneClear:
-					LaneClear();
-					break;
-				case Orbwalker.Mode.RunlikeHell:
-					RunlikeHell();
+				case 2:
+					switch(Orbwalker.CurrentMode)
+					{
+						case Orbwalker.Mode.Combo:
+							if(ChampionMenu.Item("useE_Combo").GetValue<bool>())
+								GansterCastE();
+							if(ChampionMenu.Item("useQ_Combo").GetValue<bool>())
+								GansterCastQEnemy();
+							if(ChampionMenu.Item("useW_Combo").GetValue<bool>())
+								GansterCastWEnemy();
+							if(ChampionMenu.Item("useR_Combo").GetValue<bool>() ||
+								ChampionMenu.Item("useR_Combo_Filler").GetValue<bool>())
+								CastREnemy();
+							break;
+						case Orbwalker.Mode.Harass:
+							HarassGentleMan();
+							break;
+						case Orbwalker.Mode.LaneClear:
+							LaneClearGentleMan();
+							break;
+						case Orbwalker.Mode.RunlikeHell:
+							RunlikeHellGentleMan();
+							break;
+					}
 					break;
 			}
 		}
 
-		private void Combo()
+		private void GansterCastQEnemy()
+		{
+			if(!Q.IsReady() || !CanUseSpells)
+				return;
+			var target = TargetSelector.GetTarget(Q.Range);
+
+			if(target != null)
+			{
+				if((target.IsValidTarget(Q.Range)))
+				{
+					Q.Cast(target, UsePackets());
+					UsedSkill();
+				}
+			}
+			target = TargetSelector.GetTarget(Q2.Range);
+			if(target == null)
+				return;
+			if((!target.IsValidTarget(Q2.Range)) || !CanUseSpells || !Q.IsReady())
+				return;
+			var qCollision = Q2.GetPrediction(target).CollisionObjects;
+			foreach(var qCollisionChar in qCollision.Where(qCollisionChar => qCollisionChar.IsValidTarget(Q.Range)))
+			{
+				Q.Cast(qCollisionChar, UsePackets());
+				UsedSkill();
+			}
+		}
+
+		private void GansterCastQMinion()
+		{
+			if(!Q.IsReady() || !CanUseSpells)
+				return;
+			var laneClear = Orbwalker.CurrentMode == Orbwalker.Mode.LaneClear;
+			var allMinions = MinionManager.GetMinions(ObjectManager.Player.Position, Q.Range, MinionTypes.All, MinionTeam.NotAlly);
+			if(!laneClear)
+				return;
+			var minion =
+				allMinions.FirstOrDefault(
+					minionn => minionn.Distance(ObjectManager.Player) <= Q.Range);
+			if(minion == null)
+				return;
+			Q.CastOnUnit(minion, UsePackets());
+			UsedSkill();
+		}
+
+		private void GansterCastWEnemy()
+		{
+			if(!W.IsReady() || !CanUseSpells)
+				return;
+			var target = TargetSelector.GetTarget(W.Range);
+			if(target == null)
+				return;
+			if(target.IsValidTarget(W.Range) && W.GetPrediction(target).Hitchance >= HitChance.High)
+			{
+				W.Cast(target, UsePackets());
+				UsedSkill();
+			}
+			else if(W.GetPrediction(target).Hitchance == HitChance.Collision)
+			{
+				var wCollision = W.GetPrediction(target).CollisionObjects;
+				foreach(var wCollisionChar in wCollision.Where(wCollisionChar => wCollisionChar.Distance(target) <= 100))
+				{
+					W.Cast(wCollisionChar.Position, UsePackets());
+					UsedSkill();
+				}
+			}
+		}
+
+		private void GansterCastE()
+		{
+			if(!E.IsReady() || !CanUseSpells)
+				return;
+			var combo = Orbwalker.CurrentMode == Orbwalker.Mode.Combo;
+			var comboRange = ChampionMenu.Item("useE_Combo_maxrange").GetValue<Slider>().Value;
+
+			var laneClear = Orbwalker.CurrentMode == Orbwalker.Mode.LaneClear;
+			var laneClearRange = ChampionMenu.Item("useE_LaneClear_maxrange").GetValue<Slider>().Value;
+
+
+			if(combo)
+			{
+				var target = TargetSelector.GetTarget(comboRange);
+				if(!target.IsValidTarget(comboRange))
+					return;
+				E.Cast(Game.CursorPos, UsePackets());
+				UsedSkill();
+			}
+			else if(laneClear)
+			{
+				var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, laneClearRange, MinionTypes.All, MinionTeam.NotAlly);
+				foreach(var minion in allMinions.Where(minion => minion != null).Where(minion => minion.IsValidTarget(laneClearRange) && E.IsReady()))
+				{
+					E.Cast(Game.CursorPos, UsePackets());
+					UsedSkill();
+				}
+			}
+		}
+
+		private void GansterCastWMinion()
+		{
+			if(!W.IsReady() || !CanUseSpells)
+				return;
+			var allMinions = MinionManager.GetMinions(ObjectManager.Player.Position, W.Range + 100, MinionTypes.All,
+				MinionTeam.NotAlly);
+			var minion = allMinions.FirstOrDefault(minionn => minionn.IsValidTarget(W.Range));
+			if(minion != null)
+			{
+				W.Cast(minion.Position, UsePackets());
+				UsedSkill();
+			}
+		}
+
+		private void ComboGentleMan()
 		{
 			if(ChampionMenu.Item("useE_Combo").GetValue<bool>())
 				CastE(!ChampionMenu.Item("usePassive_care").GetValue<bool>());
@@ -193,10 +394,79 @@ namespace Primes_Ultimate_Carry
 				CastW(!ChampionMenu.Item("usePassive_care").GetValue<bool>());
 			if(ChampionMenu.Item("useQ_Combo").GetValue<bool>())
 				CastQ(!ChampionMenu.Item("usePassive_care").GetValue<bool>());
-			//CastR();
+			if(ChampionMenu.Item("useR_Combo").GetValue<bool>() || ChampionMenu.Item("useR_Combo_Filler").GetValue<bool>())
+				CastREnemy();
 		}
 
-		private void Harass()
+		private void CastREnemy()
+		{
+			if((ChampionMenu.Item("useR_Combo_Filler").GetValue<bool>() && (Q.IsReady() || W.IsReady() || E.IsReady())) || (!R.IsReady() || !CanUseSpells))
+				return;
+			var target = TargetSelector.GetTarget(R.Range);
+			if(target.IsValidTarget(R.Range))
+			{
+				R.Cast(target, UsePackets());
+				UsedSkill();
+				RActive = true;
+			}
+		}
+
+		private void UsedSkill()
+		{
+			if(!CanUseSpells)
+				return;
+			CanUseSpells = false;
+			SpellCastetTick = Environment.TickCount;
+		}
+
+		private void UltCheck()
+		{
+			var tempultactive = false;
+			foreach(var buff in PUC.Player.Buffs.Where(buff => buff.Name == "LucianR"))
+				tempultactive = true;
+
+			if(tempultactive)
+			{
+				Orbwalker.DisableAttack();
+				RActive = true;
+			}
+			if(!tempultactive)
+			{
+				Orbwalker.EnableAttack();
+				RActive = false;
+			}
+		}
+
+		private void BuffCheck()
+		{
+			if(CanUseSpells == false && WaitingForBuff == false && GainBuff == false)
+				WaitingForBuff = true;
+
+			if(WaitingForBuff)
+				foreach(var buff in PUC.Player.Buffs.Where(buff => buff.Name == "lucianpassivebuff"))
+					GainBuff = true;
+
+			if(GainBuff)
+			{
+				WaitingForBuff = false;
+				var tempgotBuff = false;
+				foreach(var buff in PUC.Player.Buffs.Where(buff => buff.Name == "lucianpassivebuff"))
+					tempgotBuff = true;
+				if(tempgotBuff == false)
+				{
+					GainBuff = false;
+					CanUseSpells = true;
+				}
+			}
+
+			if(SpellCastetTick >= Environment.TickCount - 1000 || WaitingForBuff != true)
+				return;
+			WaitingForBuff = false;
+			GainBuff = false;
+			CanUseSpells = true;
+		}
+
+		private void HarassGentleMan()
 		{
 			if(ChampionMenu.Item("useW_Harass").GetValue<bool>())
 				CastW();
@@ -204,7 +474,7 @@ namespace Primes_Ultimate_Carry
 				CastQ(!ChampionMenu.Item("usePassive_care").GetValue<bool>());
 		}
 
-		private void LaneClear()
+		private void LaneClearGentleMan()
 		{
 			if(ChampionMenu.Item("useE_LaneClear").GetValue<bool>())
 				CastE(!ChampionMenu.Item("usePassive_care").GetValue<bool>());
@@ -214,7 +484,7 @@ namespace Primes_Ultimate_Carry
 				CastQ(!ChampionMenu.Item("usePassive_care").GetValue<bool>());
 		}
 
-		private void RunlikeHell()
+		private void RunlikeHellGentleMan()
 		{
 			if(ChampionMenu.Item("useE_RunLikeHell").GetValue<bool>())
 				CastE(ChampionMenu.Item("useE_RunLikeHell_passive").GetValue<bool>());
@@ -237,15 +507,15 @@ namespace Primes_Ultimate_Carry
 						{
 							if(obj is Obj_AI_Hero)
 							{
-								Q.Cast(obj);
+								Q.Cast(obj, UsePackets());
 								DelayTick = Environment.TickCount;
 								return;
 							}
 							for(var i = 10; i < 1070 - Q.Range; i = i + 10)
 							{
-								if(!(runwardposition(Q.GetPrediction(obj).UnitPosition, i).Distance(Q.GetPrediction(enemy).UnitPosition) < 35))
+								if(!(HitPosition(Q.GetPrediction(obj).UnitPosition, i).Distance(Q.GetPrediction(enemy).UnitPosition) < 35))
 									continue;
-								Q.Cast(obj);
+								Q.Cast(obj, UsePackets());
 								DelayTick = Environment.TickCount;
 								return;
 							}
@@ -253,11 +523,13 @@ namespace Primes_Ultimate_Carry
 					}
 					break;
 				case Orbwalker.Mode.Harass:
+					if(!ManamanagerAllowCast("ManaManager_Harass"))
+						return;
 					foreach(var enemy in PUC.AllHerosEnemy.Where(hero => hero.IsValidTarget(1100)))
 					{
 						foreach(var obj in ObjectManager.Get<Obj_AI_Base>().Where(obj => obj.IsValidTarget(Q.Range)))
 						{
-							if (obj is Obj_AI_Hero )
+							if(obj is Obj_AI_Hero)
 							{
 								Q.Cast(obj);
 								DelayTick = Environment.TickCount;
@@ -265,7 +537,7 @@ namespace Primes_Ultimate_Carry
 							}
 							for(var i = 10; i < 1070 - Q.Range; i = i + 10)
 							{
-								if (!(runwardposition(Q.GetPrediction(obj).UnitPosition, i).Distance(Q.GetPrediction(enemy).UnitPosition) < 35))
+								if(!(HitPosition(Q.GetPrediction(obj).UnitPosition, i).Distance(Q.GetPrediction(enemy).UnitPosition) < 35))
 									continue;
 								Q.Cast(obj);
 								DelayTick = Environment.TickCount;
@@ -275,8 +547,10 @@ namespace Primes_Ultimate_Carry
 					}
 					break;
 				case Orbwalker.Mode.LaneClear:
+					if(!ManamanagerAllowCast("ManaManager_LaneClear"))
+						return;
 					var allMinions = MinionManager.GetMinions(ObjectManager.Player.Position, Q.Range, MinionTypes.All, MinionTeam.NotAlly);
-					var minion = allMinions.FirstOrDefault(minionn => minionn.Distance(ObjectManager.Player) <= Q.Range && HealthPrediction.LaneClearHealthPrediction(minionn,500) > 0);
+					var minion = allMinions.FirstOrDefault(minionn => minionn.Distance(ObjectManager.Player) <= Q.Range && HealthPrediction.LaneClearHealthPrediction(minionn, 500) > 0);
 					if(minion == null)
 						return;
 					Q.CastOnUnit(minion, UsePackets());
@@ -291,12 +565,12 @@ namespace Primes_Ultimate_Carry
 				return;
 			if(Delay >= Environment.TickCount - DelayTick)
 				return;
-		
-			var target =TargetSelector.GetTarget(W.Range);
+
+			var target = TargetSelector.GetTarget(W.Range);
 			switch(Orbwalker.CurrentMode)
 			{
 				case Orbwalker.Mode.Combo:
-					if (target.IsValidTarget(W.Range) && W.GetPrediction(target).Hitchance >= HitChance.High)
+					if(target.IsValidTarget(W.Range) && W.GetPrediction(target).Hitchance >= HitChance.High)
 					{
 						W.Cast(target, UsePackets());
 						DelayTick = Environment.TickCount;
@@ -309,9 +583,11 @@ namespace Primes_Ultimate_Carry
 							W.Cast(target, UsePackets());
 							DelayTick = Environment.TickCount;
 						}
-					}				
+					}
 					break;
 				case Orbwalker.Mode.Harass:
+					if(!ManamanagerAllowCast("ManaManager_Harass"))
+						return;
 					if(target.IsValidTarget(W.Range) && W.GetPrediction(target).Hitchance >= HitChance.High)
 					{
 						W.Cast(target, UsePackets());
@@ -328,6 +604,8 @@ namespace Primes_Ultimate_Carry
 					}
 					break;
 				case Orbwalker.Mode.LaneClear:
+					if(!ManamanagerAllowCast("ManaManager_LaneClear"))
+						return;
 					var allMinions = MinionManager.GetMinions(ObjectManager.Player.Position, W.Range - 100, MinionTypes.All, MinionTeam.NotAlly);
 					var minion = allMinions.FirstOrDefault(minionn => minionn.IsValidTarget(W.Range) && HealthPrediction.LaneClearHealthPrediction(minionn, 500) > 0);
 					if(minion != null)
@@ -341,7 +619,7 @@ namespace Primes_Ultimate_Carry
 
 		private void CastE(bool iggnorePassive = false)
 		{
-			if(!E.IsReady() || ( HavePassiveUp && !iggnorePassive))
+			if(!E.IsReady() || (HavePassiveUp && !iggnorePassive))
 				return;
 			if(Delay >= Environment.TickCount - DelayTick)
 				return;
@@ -349,7 +627,7 @@ namespace Primes_Ultimate_Carry
 			switch(Orbwalker.CurrentMode)
 			{
 				case Orbwalker.Mode.Combo:
-					if (TargetSelector.GetTarget(PUC.Menu.Item("useE_Combo_maxrange").GetValue<Slider>().Value) != null)
+					if(TargetSelector.GetTarget(PUC.Menu.Item("useE_Combo_maxrange").GetValue<Slider>().Value) != null)
 					{
 						E.Cast(Game.CursorPos, UsePackets());
 						DelayTick = Environment.TickCount;
