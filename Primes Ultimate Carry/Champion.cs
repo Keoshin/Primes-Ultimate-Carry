@@ -90,5 +90,38 @@ namespace Primes_Ultimate_Carry
 				unit = PUC.Player;
 			return min <= PUC.AllHerosEnemy.Count(hero => hero.Distance(unit) < range && hero.IsValidTarget());
 		}
+		public bool EnemysinRange(float range, int min , Vector3  pos)
+		{
+			return min <= PUC.AllHerosEnemy.Count(hero => hero.Position.Distance(pos) < range && hero.IsValidTarget());
+		}
+
+		public void AddManaManager(Menu menu,string name,int basic)
+		{
+			menu.AddItem(new MenuItem(name, "= Mana-Manager").SetValue(new Slider(basic, 100, 0)));
+		}
+
+		public bool ManamanagerAllowCast(string name)
+		{
+			return PUC.Menu.Item(name).GetValue<Slider>().Value < PUC.Player.Mana/PUC.Player.MaxMana*100;
+		}
+
+		public bool EnoughManaFor(SpellSlot spell, SpellSlot spell2 = SpellSlot.Unknown, SpellSlot spell3 = SpellSlot.Unknown, SpellSlot spell4 = SpellSlot.Unknown)
+		{
+			var cost1 = PUC.Player.Spellbook.GetSpell(spell).ManaCost;
+			var cost2 = 0f;
+			var cost3 = 0f;
+			var cost4 = 0f;
+			if(spell2 != SpellSlot.Unknown)
+				cost2 = PUC.Player.Spellbook.GetSpell(spell2).ManaCost;
+			if(spell3 != SpellSlot.Unknown)
+				cost3 = PUC.Player.Spellbook.GetSpell(spell3).ManaCost;
+			if(spell4 != SpellSlot.Unknown)
+				cost4 = PUC.Player.Spellbook.GetSpell(spell4).ManaCost;
+
+			return cost1 + cost2 + cost3 + cost4 <= PUC.Player.Mana;
+		}
+
+		
+
 	}
 }

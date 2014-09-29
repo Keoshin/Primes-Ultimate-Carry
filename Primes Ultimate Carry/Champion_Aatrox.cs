@@ -37,49 +37,49 @@ namespace Primes_Ultimate_Carry
 
 		private void LoadMenu()
 		{
-			ChampionMenu.AddSubMenu(new Menu("Combo", "Combo"));
-			ChampionMenu.SubMenu("Combo").AddItem(new MenuItem("sep0", "====== Combo"));
-			ChampionMenu.SubMenu("Combo").AddItem(new MenuItem("useQ_Combo", "= Use Q").SetValue(true));
-			ChampionMenu.SubMenu("Combo").AddItem(new MenuItem("useE_Combo", "= Use E").SetValue(true));
-			ChampionMenu.SubMenu("Combo").AddItem(new MenuItem("useR_Combo_Amount", "= R on Enemys in Range").SetValue(new Slider(2, 5, 0)));
-			ChampionMenu.SubMenu("Combo").AddItem(new MenuItem("useR_Combo_EnemyHealh", "= R on Enemys %Health <").SetValue(new Slider(60, 100, 0)));
-			ChampionMenu.SubMenu("Combo").AddItem(new MenuItem("sep1", "========="));
+			ChampionMenu.AddSubMenu(new Menu("Combo", PUC.Player.ChampionName + "Combo"));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Combo").AddItem(new MenuItem("sep0", "====== Combo"));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Combo").AddItem(new MenuItem("useQ_Combo", "= Use Q").SetValue(true));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Combo").AddItem(new MenuItem("useE_Combo", "= Use E").SetValue(true));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Combo").AddItem(new MenuItem("useR_Combo_Amount", "= R on Enemys in Range").SetValue(new Slider(2, 5, 0)));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Combo").AddItem(new MenuItem("useR_Combo_EnemyHealh", "= R on Enemys %Health <").SetValue(new Slider(60, 100, 0)));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Combo").AddItem(new MenuItem("sep1", "========="));
 
-			ChampionMenu.AddSubMenu(new Menu("Harass", "Harass"));
-			ChampionMenu.SubMenu("Harass").AddItem(new MenuItem("sep0", "====== Harass"));
-			ChampionMenu.SubMenu("Harass").AddItem(new MenuItem("useQ_Harass", "= Use Q").SetValue(true));
-			ChampionMenu.SubMenu("Harass").AddItem(new MenuItem("useQ_Harass_dangerzones", "= Q inside Dangerzones ?").SetValue(false));
-			ChampionMenu.SubMenu("Harass").AddItem(new MenuItem("useE_Harass", "= Use E").SetValue(true));
-			ChampionMenu.SubMenu("Harass").AddItem(new MenuItem("sep1", "========="));
+			ChampionMenu.AddSubMenu(new Menu("Harass", PUC.Player.ChampionName + "Harass"));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Harass").AddItem(new MenuItem("sep0", "====== Harass"));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Harass").AddItem(new MenuItem("useQ_Harass", "= Use Q").SetValue(true));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Harass").AddItem(new MenuItem("useQ_Harass_dangerzones", "= Q inside Dangerzones ?").SetValue(false));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Harass").AddItem(new MenuItem("useE_Harass", "= Use E").SetValue(true));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Harass").AddItem(new MenuItem("sep1", "========="));
 
-			ChampionMenu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
-			ChampionMenu.SubMenu("LaneClear").AddItem(new MenuItem("sep0", "====== LaneClear"));
-			ChampionMenu.SubMenu("LaneClear").AddItem(new MenuItem("useQ_LaneClear", "= Use Q").SetValue(true));
-			ChampionMenu.SubMenu("LaneClear").AddItem(new MenuItem("useE_LaneClear", "= Use E").SetValue(true));
-			ChampionMenu.SubMenu("LaneClear").AddItem(new MenuItem("sep1", "========="));
+			ChampionMenu.AddSubMenu(new Menu("LaneClear", PUC.Player.ChampionName + "LaneClear"));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "LaneClear").AddItem(new MenuItem("sep0", "====== LaneClear"));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "LaneClear").AddItem(new MenuItem("useQ_LaneClear", "= Use Q").SetValue(true));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "LaneClear").AddItem(new MenuItem("useE_LaneClear", "= Use E").SetValue(true));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "LaneClear").AddItem(new MenuItem("sep1", "========="));
 
 			//ChampionMenu.AddSubMenu(new Menu("Lasthit", "Lasthit"));
 
-			ChampionMenu.AddSubMenu(new Menu("RunLikeHell", "RunLikeHell"));
-			ChampionMenu.SubMenu("RunLikeHell").AddItem(new MenuItem("sep0", "====== RunLikeHell"));
-			ChampionMenu.SubMenu("RunLikeHell").AddItem(new MenuItem("useQ_RunLikeHell", "= Q to Mouse").SetValue(true));
-			ChampionMenu.SubMenu("RunLikeHell").AddItem(new MenuItem("useE_RunLikeHell", "= E to slow Hunter").SetValue(true));
-			ChampionMenu.SubMenu("RunLikeHell").AddItem(new MenuItem("sep1", "========="));
+			ChampionMenu.AddSubMenu(new Menu("RunLikeHell", PUC.Player.ChampionName + "RunLikeHell"));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "RunLikeHell").AddItem(new MenuItem("sep0", "====== RunLikeHell"));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "RunLikeHell").AddItem(new MenuItem("useQ_RunLikeHell", "= Q to Mouse").SetValue(true));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "RunLikeHell").AddItem(new MenuItem("useE_RunLikeHell", "= E to slow Hunter").SetValue(true));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "RunLikeHell").AddItem(new MenuItem("sep1", "========="));
 
-			ChampionMenu.AddSubMenu(new Menu("Misc", "Misc"));
-			ChampionMenu.SubMenu("Misc").AddItem(new MenuItem("sep0", "====== Misc"));
-			ChampionMenu.SubMenu("Misc").AddItem(new MenuItem("useW_autoswitch", "= Switch W Automatic").SetValue(true));
-			ChampionMenu.SubMenu("Misc").AddItem(new MenuItem("useW_autoswitch_health", "= Change Percent Health").SetValue(new Slider(60, 100, 0)));
-			ChampionMenu.SubMenu("Misc").AddItem(new MenuItem("useW_autoswitch_prioheal", "= Heal Priority farming").SetValue(true));
-			ChampionMenu.SubMenu("Misc").AddItem(new MenuItem("sep1", "========="));
+			ChampionMenu.AddSubMenu(new Menu("Misc", PUC.Player.ChampionName + "Misc"));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Misc").AddItem(new MenuItem("sep0", "====== Misc"));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Misc").AddItem(new MenuItem("useW_autoswitch", "= Switch W Automatic").SetValue(true));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Misc").AddItem(new MenuItem("useW_autoswitch_health", "= Change Percent Health").SetValue(new Slider(60, 100, 0)));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Misc").AddItem(new MenuItem("useW_autoswitch_prioheal", "= Heal Priority farming").SetValue(true));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Misc").AddItem(new MenuItem("sep1", "========="));
 
-			ChampionMenu.AddSubMenu(new Menu("Drawing", "Drawing"));
-			ChampionMenu.SubMenu("Drawing").AddItem(new MenuItem("sep0", "====== Drawing"));
-			ChampionMenu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Disabled", "Disable All").SetValue(false));
-			ChampionMenu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Q", "Draw Q").SetValue(true));
-			ChampionMenu.SubMenu("Drawing").AddItem(new MenuItem("Draw_E", "Draw E").SetValue(true));
-			ChampionMenu.SubMenu("Drawing").AddItem(new MenuItem("Draw_R", "Draw R").SetValue(true));
-			ChampionMenu.SubMenu("Drawing").AddItem(new MenuItem("sep1", "========="));
+			ChampionMenu.AddSubMenu(new Menu("Drawing", PUC.Player.ChampionName + "Drawing"));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Drawing").AddItem(new MenuItem("sep0", "====== Drawing"));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Drawing").AddItem(new MenuItem("Draw_Disabled", "Disable All").SetValue(false));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Drawing").AddItem(new MenuItem("Draw_Q", "Draw Q").SetValue(true));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Drawing").AddItem(new MenuItem("Draw_E", "Draw E").SetValue(true));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Drawing").AddItem(new MenuItem("Draw_R", "Draw R").SetValue(true));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Drawing").AddItem(new MenuItem("sep1", "========="));
 
 			PUC.Menu.AddSubMenu(ChampionMenu);
 		}

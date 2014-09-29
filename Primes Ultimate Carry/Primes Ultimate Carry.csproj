@@ -57,6 +57,7 @@
     <Compile Include="Activator.cs" />
     <Compile Include="Champion.cs" />
     <Compile Include="Champion_Lucian.cs" />
+    <Compile Include="Champion_Orianna.cs" />
     <Compile Include="Chat.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="Database.cs" />

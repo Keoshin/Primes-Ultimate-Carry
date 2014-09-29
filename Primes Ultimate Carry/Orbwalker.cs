@@ -180,7 +180,7 @@ namespace Primes_Ultimate_Carry
 				return;
 			}
 			var point = Player.ServerPosition +
-			500 * (position.To2D() - Player.ServerPosition.To2D()).Normalized().To3D();
+			200 * (position.To2D() - Player.ServerPosition.To2D()).Normalized().To3D();
 			Player.IssueOrder(GameObjectOrder.MoveTo, point);
 		}
 
@@ -199,7 +199,7 @@ namespace Primes_Ultimate_Carry
 			if(CurrentMode == Mode.Harass || CurrentMode == Mode.Lasthit || CurrentMode == Mode.LaneClear)
 			{
 				foreach(var minion in from minion in ObjectManager.Get<Obj_AI_Minion>().Where(minion => minion.IsValidTarget(GetAutoAttackRangeto(minion)) && minion.Health > 0)
-									  let time = (int)(Player.AttackCastDelay * 1000)  + Game.Ping / 2 - 150 +
+									  let time = (int)(Player.AttackCastDelay * 1000)  + Game.Ping / 2 - 100 +
 												 (int)(1000 * Player.Distance(minion) / (Player.IsMelee() ? float.MaxValue : Player.BasicAttack.MissileSpeed))
 									  let predHealth = HealthPrediction.GetHealthPrediction(minion, time, GetFarmDelay)
 									  where minion.Team != GameObjectTeam.Neutral &&

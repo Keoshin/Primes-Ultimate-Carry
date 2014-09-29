@@ -146,7 +146,6 @@ namespace Primes_Ultimate_Carry
 
 		private void OnDraw(EventArgs args)
 		{			
-
 			if(ChampionMenu.Item("Draw_Disabled").GetValue<bool>())
 				return;
 
@@ -165,7 +164,6 @@ namespace Primes_Ultimate_Carry
 			if(ChampionMenu.Item("Draw_R").GetValue<bool>())
 				if(R.Level > 0)
 					Utility.DrawCircle(ObjectManager.Player.Position, R.Range, R.IsReady() ? Color.Green : Color.Red);
-
 		}
 
 		private void OnUpdate(EventArgs args)
