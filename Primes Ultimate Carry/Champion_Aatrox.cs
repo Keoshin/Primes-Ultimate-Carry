@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Windows.Forms;
 using LeagueSharp;
 using LeagueSharp.Common;
 using Color = System.Drawing.Color;
@@ -8,7 +7,7 @@ using Menu = LeagueSharp.Common.Menu;
 using MenuItem = LeagueSharp.Common.MenuItem;
 
 namespace Primes_Ultimate_Carry
-{
+{	
 	// ReSharper disable once InconsistentNaming
 	class Champion_Aatrox : Champion
 	{
@@ -25,19 +24,6 @@ namespace Primes_Ultimate_Carry
 
 		private void SetSpells()
 		{
-
-			//p = new PassiveDamage
-			//{
-			//	ChampionName = "Caitlyn",
-			//	IsActive = (source, target) => (source.HasBuff("CaitlynHeadshotReady")),
-			//	GetDamage =
-			//	(source, target) =>
-			//	((float)
-			//	source.CalcDamage(target, DamageType.Physical,
-			//	1.5d * (source.BaseAttackDamage + source.FlatPhysicalDamageMod))),
-			//};
-			//AttackPassives.Add(p);
-
 			Q = new Spell(SpellSlot.Q, 650);
 			Q.SetSkillshot((float)0.27, 280, 1800, false, SkillshotType.SkillshotCircle);
 
@@ -46,8 +32,7 @@ namespace Primes_Ultimate_Carry
 			E = new Spell(SpellSlot.E,1000);
 			E.SetSkillshot((float)0.27,80,1200,false,SkillshotType.SkillshotLine);
 
-			R = new Spell(SpellSlot.R,300);
-			
+			R = new Spell(SpellSlot.R,300);			
 		}
 
 		private void LoadMenu()
@@ -68,7 +53,7 @@ namespace Primes_Ultimate_Carry
 			ChampionMenu.SubMenu("Harass").AddItem(new MenuItem("sep1", "========="));
 
 			ChampionMenu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
-			ChampionMenu.SubMenu("LaneClear").AddItem(new MenuItem("sep0", "====== Harass"));
+			ChampionMenu.SubMenu("LaneClear").AddItem(new MenuItem("sep0", "====== LaneClear"));
 			ChampionMenu.SubMenu("LaneClear").AddItem(new MenuItem("useQ_LaneClear", "= Use Q").SetValue(true));
 			ChampionMenu.SubMenu("LaneClear").AddItem(new MenuItem("useE_LaneClear", "= Use E").SetValue(true));
 			ChampionMenu.SubMenu("LaneClear").AddItem(new MenuItem("sep1", "========="));
@@ -179,7 +164,7 @@ namespace Primes_Ultimate_Carry
 			if(ChampionMenu.Item("useE_Combo").GetValue<bool>())
 				CastE();
 			if(ChampionMenu.Item("useQ_Combo").GetValue<bool>())
-				CastQ("Combo");
+				CastQ();
 			CastR();
 		}
 
@@ -188,7 +173,7 @@ namespace Primes_Ultimate_Carry
 			if(ChampionMenu.Item("useE_Harass").GetValue<bool>())
 				CastE();
 			if(ChampionMenu.Item("useQ_Harass").GetValue<bool>())
-				CastQ("Harass");
+				CastQ();
 		}
 
 		private void LaneClear()
@@ -222,16 +207,16 @@ namespace Primes_Ultimate_Carry
 			W.Cast();
 		}
 
-		private void CastQ(string mode)
+		private void CastQ()
 		{
 			var target = TargetSelector.GetTarget(Q.Range + Q.Width / 2);
-			switch(mode)
+			switch(Orbwalker.CurrentMode)
 			{
-				case "Combo":
+				case Orbwalker.Mode.Combo:
 					if(target != null && PUC.Player.Distance(target) > Orbwalker.GetAutoAttackRangeto(target))
 						Cast_BasicSkillshot_Enemy(Q);
 					break;
-				case "Harass":
+				case Orbwalker.Mode.Harass:
 					if(target != null && PUC.Player.Distance(target) > Orbwalker.GetAutoAttackRangeto(target))
 						if (!ChampionMenu.Item("useQ_Harass_dangerzones").GetValue<bool>())
 						{

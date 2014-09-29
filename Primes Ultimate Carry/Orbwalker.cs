@@ -146,7 +146,11 @@ namespace Primes_Ultimate_Carry
 				FireBeforeAttack(target);
 				if(!_disableNextAttack)
 				{
-					Player.IssueOrder(GameObjectOrder.AttackUnit, target);
+					if(!Player.IssueOrder(GameObjectOrder.AttackUnit, target))
+						Utility.DelayAction.Add(250, ResetAutoAttackTimer);
+					else
+						_lastAATick = Environment.TickCount + Game.Ping / 2;
+
 					return;
 				}
 			}
@@ -377,8 +381,10 @@ namespace Primes_Ultimate_Carry
 
 		private static void FireOnTargetSwitch(Obj_AI_Base newTarget)
 		{
-			if(OnTargetChange != null && (_lastTarget == null || _lastTarget.NetworkId != newTarget.NetworkId))
+			if (OnTargetChange != null && (_lastTarget == null || _lastTarget.NetworkId != newTarget.NetworkId))
+			{
 				OnTargetChange(_lastTarget, newTarget);
+			}
 		}
 
 		private static void FireAfterAttack(Obj_AI_Base unit, Obj_AI_Base target)

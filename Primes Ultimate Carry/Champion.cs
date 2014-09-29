@@ -62,10 +62,11 @@ namespace Primes_Ultimate_Carry
 		{
 			if(!spell.IsReady() )
 				return;
-			var minions = MinionManager.GetMinions(ObjectManager.Player.Position, spell.Type == SkillshotType.SkillshotLine ? spell.Range : spell.Range + ((spell.Width + extrawidth) / 2), MinionTypes.All, MinionTeam.NotAlly);
+			var minions = MinionManager.GetMinions(ObjectManager.Player.Position, spell.Type == SkillshotType.SkillshotLine ? spell.Range : spell.Range + ((spell.Width + extrawidth) / 2),MinionTypes.All , MinionTeam.NotAlly);
 			if(minions.Count == 0)
 				return;
 			var castPostion = new MinionManager.FarmLocation();
+			
 			if(spell.Type == SkillshotType.SkillshotCircle)
 				castPostion = MinionManager.GetBestCircularFarmLocation(minions.Select(minion => minion.ServerPosition.To2D()).ToList(), spell.Width + extrawidth, spell.Range);
 			if(spell.Type == SkillshotType.SkillshotLine)

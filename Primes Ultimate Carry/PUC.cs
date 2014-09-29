@@ -22,13 +22,8 @@ namespace Primes_Ultimate_Carry
 		public PUC()
 		{
 			Game.PrintChat("======  Primes Ultimate Carry Loaded! ======");
-			Game.PrintChat("Beta version v 0.1");
+			Game.PrintChat("Beta version v 0.4");
 			Game.PrintChat("This is a Beta version, not all is active,");
-			Game.PrintChat("working or included, not report things for");
-			Game.PrintChat("things what i not ask for in Forum Post.");
-			Game.PrintChat("=================================");
-			Game.PrintChat("If to many false reports couse you cant read ");
-			Game.PrintChat("i will close open beta again.");
 			Game.PrintChat("=================================");
 
 			Player = ObjectManager.Player;
