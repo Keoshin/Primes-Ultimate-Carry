@@ -223,9 +223,9 @@ namespace Primes_Ultimate_Carry
 								CastREnemy();
 							break;
 						case Orbwalker.Mode.Harass:
-							if(ChampionMenu.Item("useQ_Harass").GetValue<bool>() && ManamanagerAllowCast("ManaManager_Harras"))
+							if(ChampionMenu.Item("useQ_Harass").GetValue<bool>() && ManamanagerAllowCast("ManaManager_Harass"))
 								GansterCastQEnemy();
-							if(ChampionMenu.Item("useW_Harass").GetValue<bool>() && ManamanagerAllowCast("ManaManager_Harras"))
+							if(ChampionMenu.Item("useW_Harass").GetValue<bool>() && ManamanagerAllowCast("ManaManager_Harass"))
 								GansterCastWEnemy();
 							break;
 						case Orbwalker.Mode.LaneClear:
