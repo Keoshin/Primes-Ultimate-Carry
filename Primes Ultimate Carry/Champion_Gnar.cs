@@ -164,6 +164,8 @@ namespace Primes_Ultimate_Carry
 						CastWEnemy();
 						CastWMinion();
 					}
+					if(ChampionMenu.Item("useE_LaneClear").GetValue<bool>() && GnarState > 1)
+						Cast_BasicSkillshot_AOE_Farm(E);
 					break;
 				case Orbwalker.Mode.Lasthit:
 					if(ChampionMenu.Item("useQ_Lasthit").GetValue<bool>())

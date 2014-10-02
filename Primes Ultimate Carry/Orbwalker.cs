@@ -340,7 +340,7 @@ namespace Primes_Ultimate_Carry
 		public static bool CanAttack()
 		{
 			if(_lastAATick <= Environment.TickCount)
-				return Environment.TickCount + Game.Ping / 2 + 25 >= _lastAATick + Player.AttackDelay * 1000 && _attack;
+				return Environment.TickCount + Game.Ping / 2  >= _lastAATick + Player.AttackDelay * 1000 && _attack;
 			return false;
 		}
 
