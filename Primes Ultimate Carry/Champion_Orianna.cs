@@ -130,6 +130,8 @@ namespace Primes_Ultimate_Carry
 			CastE();
 			CastW();
 			CastR();
+			if(ChampionMenu.Item("Harass_Auto").GetValue<bool>())
+				CastQ();
 			switch(Orbwalker.CurrentMode)
 			{
 				case Orbwalker.Mode.Combo:
@@ -245,7 +247,7 @@ namespace Primes_Ultimate_Carry
 			{
 				lowestFriend[0] = friend;
 			}
-			if(lowestFriend[0] != null && Orbwalker.CurrentMode != Orbwalker.Mode.None)
+			if(lowestFriend[0] != null && Orbwalker.CurrentMode == Orbwalker.Mode.Combo )
 				E.Cast(lowestFriend[0], UsePackets());
 		}
 

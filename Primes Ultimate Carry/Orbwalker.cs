@@ -19,6 +19,7 @@ namespace Primes_Ultimate_Carry
 		private static int _lastAATick;
 		private static Obj_AI_Base _lastTarget;
 		private const float LaneClearWaitTimeMod = 2f;
+		public static int LastMovement = 0;
 
 		public delegate void BeforeAttackEvenH(BeforeAttackEventArgs args);
 		public delegate void OnTargetChangeH(Obj_AI_Base oldTarget, Obj_AI_Base newTarget);
@@ -169,6 +170,12 @@ namespace Primes_Ultimate_Carry
 
 		private static void MoveTo(Vector3 position, float holdAreaRadius = -1)
 		{
+			var rnd = new Random();
+			var delay = rnd.Next(50, 100);
+			if(Environment.TickCount -LastMovement < delay)
+				return;
+			LastMovement = Environment.TickCount;
+
 			if (!CanMove())
 				return;
 			if(holdAreaRadius < 0)

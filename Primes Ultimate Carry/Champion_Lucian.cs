@@ -248,6 +248,9 @@ namespace Primes_Ultimate_Carry
 					}
 					break;
 				case 2:
+					BuffCheck();
+					UltCheck();
+
 					switch(Orbwalker.CurrentMode)
 					{
 						case Orbwalker.Mode.Combo:
@@ -297,8 +300,20 @@ namespace Primes_Ultimate_Carry
 			var qCollision = Q2.GetPrediction(target).CollisionObjects;
 			foreach(var qCollisionChar in qCollision.Where(qCollisionChar => qCollisionChar.IsValidTarget(Q.Range)))
 			{
-				Q.Cast(qCollisionChar, UsePackets());
-				UsedSkill();
+				if(qCollisionChar is Obj_AI_Hero)
+				{
+					Q.Cast(qCollisionChar, UsePackets());
+					UsedSkill();
+					return;
+				}
+				for(var i = 10; i < 1070 - Q.Range; i = i + 10)
+				{
+					if(!(HitPosition(Q.GetPrediction(qCollisionChar).UnitPosition, i).Distance(Q.GetPrediction(target).UnitPosition) < 35))
+						continue;
+					Q.Cast(qCollisionChar, UsePackets());
+					UsedSkill();
+					return;
+				}
 			}
 		}
 
