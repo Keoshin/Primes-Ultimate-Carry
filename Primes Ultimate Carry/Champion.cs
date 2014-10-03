@@ -74,6 +74,36 @@ namespace Primes_Ultimate_Carry
 			spell.Cast(castPostion.Position, UsePackets());
 		}
 
+		public void Cast_Basic_Farm(Spell spell, bool skillshot = false)
+		{
+			if(!spell.IsReady())
+				return;
+			var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spell.Range, MinionTypes.All, MinionTeam.NotAlly, MinionOrderTypes.MaxHealth);
+			foreach(var minion in allMinions)
+			{
+				if(!minion.IsValidTarget())
+					continue;
+				var minionInRangeAa = Orbwalking.InAutoAttackRange(minion);
+				var minionInRangeSpell = minion.Distance(ObjectManager.Player) <= spell.Range;
+				var minionKillableAa = ObjectManager.Player.GetAutoAttackDamage(minion) >= minion.Health;
+				var minionKillableSpell = ObjectManager.Player.GetSpellDamage(minion, spell.Slot ) >= minion.Health;
+				var lastHit = Orbwalker.CurrentMode == Orbwalker.Mode.Lasthit;
+				var laneClear = Orbwalker.CurrentMode == Orbwalker.Mode.LaneClear;
+
+				if((lastHit && minionInRangeSpell && minionKillableSpell) && ((minionInRangeAa && !minionKillableAa) || !minionInRangeAa))
+					if(skillshot)
+						spell.Cast(minion.Position, UsePackets());
+					else
+						spell.Cast(minion, UsePackets());
+				else if((laneClear && minionInRangeSpell && !minionKillableSpell) && ((minionInRangeAa && !minionKillableAa) || !minionInRangeAa))
+					if(skillshot)
+						spell.Cast(minion.Position, UsePackets());
+					else
+						spell.Cast(minion, UsePackets());
+				
+			}
+		}
+
 		public bool UsePackets()
 		{
 			return ChampionMenu.Item("Primes_Champion_Packets_active").GetValue<bool>();

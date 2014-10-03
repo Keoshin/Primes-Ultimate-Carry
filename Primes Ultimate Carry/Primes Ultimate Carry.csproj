@@ -60,7 +60,7 @@
     <Compile Include="Champion_Gnar.cs" />
     <Compile Include="Champion_Lucian.cs" />
     <Compile Include="Champion_Orianna.cs" />
-    <Compile Include="Champion_Viktor.cs" />
+    <Compile Include="Champion_Ezreal.cs" />
     <Compile Include="Chat.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="Database.cs" />
