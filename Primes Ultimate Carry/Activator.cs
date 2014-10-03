@@ -114,7 +114,7 @@ namespace Primes_Ultimate_Carry
 				case Summoner.Smite: // Supported by Tarzan				
 					break;
 				case Summoner.Heal:
-					if(!PUC.Menu.Item("act_heal_use").GetValue<bool>())
+					if(!PUC.Menu.Item("act_heal_use").GetValue<bool>() || Utility.InFountain())
 						break;
 					const int healrange = 700;
 					foreach(var friend in PUC.AllHerosFriend.Where(hero => hero.IsValid && !hero.IsDead && hero.Distance(PUC.Player) < healrange))
@@ -163,7 +163,7 @@ namespace Primes_Ultimate_Carry
 					}
 					break;
 				case Summoner.Barrier:
-					if(!PUC.Menu.Item("act_barrier_use").GetValue<bool>())
+					if(!PUC.Menu.Item("act_barrier_use").GetValue<bool>() || Utility.InFountain())
 						break;
 					healperzent = false;
 					healhealth = false;
