@@ -65,16 +65,17 @@ namespace Primes_Ultimate_Carry
 
 		internal static void AddtoMenu(Menu menu)
 		{
-			menu.AddItem(new MenuItem("showRecalls", "Show Recalls").SetValue(true));
-			menu.AddItem(new MenuItem("baseUlt", "Base Ult").SetValue(true));
-			menu.AddItem(new MenuItem("extraDelay", "Extra Delay").SetValue(new Slider(0, -2000, 2000)));
+			menu.AddItem(new MenuItem("baseult_sep0", "====== BaseUlt"));
+			menu.AddItem(new MenuItem("showRecalls", "= Show Recalls").SetValue(true));
+			menu.AddItem(new MenuItem("baseUlt", "= Base Ult").SetValue(true));
+			menu.AddItem(new MenuItem("extraDelay", "= Extra Delay").SetValue(new Slider(0, -2000, 2000)));
 			menu.AddItem(
-				new MenuItem("panicKey", "Panic key (hold for disable)").SetValue(new KeyBind(32, KeyBindType.Press)));
+				new MenuItem("panicKey", "= not use Baseult Key").SetValue(new KeyBind(32, KeyBindType.Press)));
 			menu.AddItem(
-				new MenuItem("regardlessKey", "No timelimit (hold)").SetValue(new KeyBind(17, KeyBindType.Press)));
-			menu.AddItem(new MenuItem("debugMode", "Debug (developer only)").SetValue(false).DontSave());
+				new MenuItem("regardlessKey", "= No timelimit Key").SetValue(new KeyBind(17, KeyBindType.Press)));
+			menu.AddItem(new MenuItem("debugMode", "= Debug").SetValue(false).DontSave());
 
-			var teamUlt = menu.AddSubMenu(new Menu("Team Baseult Friends", "TeamUlt"));
+			var teamUlt = menu.AddSubMenu(new Menu("Baseult Friends", "TeamUlt"));
 
 			var champions = ObjectManager.Get<Obj_AI_Hero>().ToList();
 
@@ -114,7 +115,7 @@ namespace Primes_Ultimate_Carry
 
 		private static void Game_OnGameUpdate(EventArgs args)
 		{
-			int time = Environment.TickCount;
+			var time = Environment.TickCount;
 
 			foreach(PlayerInfo playerInfo in _playerInfo.Where(x => x.Champ.IsVisible))
 				playerInfo.LastSeen = time;
@@ -122,39 +123,36 @@ namespace Primes_Ultimate_Carry
 			if(!PUC.Menu.Item("baseUlt").GetValue<bool>())
 				return;
 
-			foreach(PlayerInfo playerInfo in _playerInfo.Where(x =>
+			foreach (PlayerInfo playerInfo in _playerInfo.Where(x =>
 				x.Champ.IsValid &&
 				!x.Champ.IsDead &&
 				x.Champ.IsEnemy &&
-				x.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallStarted).OrderBy(x => x.GetRecallEnd()))
+				x.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallStarted).OrderBy(x => x.GetRecallEnd()).Where(playerInfo => _ultCasted == 0 || Environment.TickCount - _ultCasted > 20000))
 			{
-				if(_ultCasted == 0 || Environment.TickCount - _ultCasted > 20000)
-					//DONT change Environment.TickCount; check for draven ult return
-					HandleRecallShot(playerInfo);
+				HandleRecallShot(playerInfo);
 			}
 		}
 
 		private static float GetUltManaCost(Obj_AI_Hero source) //remove later when fixed
 		{
-			float manaCost = UltInfo[source.ChampionName].ManaCost;
+			var manaCost = UltInfo[source.ChampionName].ManaCost;
 
-			if(source.ChampionName == "Karthus")
-			{
-				if(source.Level >= 11)
-					manaCost += 25;
+			if (source.ChampionName != "Karthus") 
+				return manaCost;
+			if(source.Level >= 11)
+				manaCost += 25;
 
-				if(source.Level >= 16)
-					manaCost += 25;
-			}
+			if(source.Level >= 16)
+				manaCost += 25;
 
 			return manaCost;
 		}
 
 		private static void HandleRecallShot(PlayerInfo playerInfo)
 		{
-			bool shoot = false;
+			var shoot = false;
 
-			foreach(Obj_AI_Hero champ in _ownTeam.Where(x =>
+			foreach(var champ in _ownTeam.Where(x =>
 				x.IsValid && (x.IsMe || Helper.GetSafeMenuItem<bool>(PUC.Menu.Item(x.ChampionName))) &&
 				!x.IsDead && !x.IsStunned &&
 				(x.Spellbook.CanUseSpell(SpellSlot.R) == SpellState.Ready ||
@@ -168,7 +166,7 @@ namespace Primes_Ultimate_Carry
 					continue;
 
 				//increase timeneeded if it should arrive earlier, decrease if later
-				float timeneeded =
+				var timeneeded =
 					Helper.GetSpellTravelTime(champ, UltInfo[champ.ChampionName].Speed,
 						UltInfo[champ.ChampionName].Delay, _enemySpawnPos) -
 					(PUC.Menu.Item("extraDelay").GetValue<Slider>().Value + 65);
@@ -179,12 +177,13 @@ namespace Primes_Ultimate_Carry
 				playerInfo.IncomingDamage[champ.NetworkId] = (float)Helper.GetUltDamage(champ, playerInfo.Champ) *
 															 UltInfo[champ.ChampionName].DamageMultiplicator;
 
-				if(playerInfo.GetRecallCountdown() <= timeneeded)
-					if(champ.IsMe)
-						shoot = true;
+				if (!(playerInfo.GetRecallCountdown() <= timeneeded)) 
+					continue;
+				if(champ.IsMe)
+					shoot = true;
 			}
 
-			float totalUltDamage = playerInfo.IncomingDamage.Values.Sum();
+			var totalUltDamage = playerInfo.IncomingDamage.Values.Sum();
 
 			float targetHealth = Helper.GetTargetHealth(playerInfo);
 
@@ -234,9 +233,9 @@ namespace Primes_Ultimate_Carry
 			if(!PUC.Menu.Item("showRecalls").GetValue<bool>())
 				return;
 
-			int index = -1;
+			var index = -1;
 
-			foreach(PlayerInfo playerInfo in _playerInfo.Where(x =>
+			foreach(var playerInfo in _playerInfo.Where(x =>
 				(x.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallStarted ||
 				 x.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportStart) &&
 				x.Champ.IsValid &&
@@ -256,22 +255,21 @@ namespace Primes_Ultimate_Carry
 
 		private static void Game_OnGameProcessPacket(GamePacketEventArgs args)
 		{
-			if(args.PacketData[0] == Packet.S2C.Recall.Header)
-			{
-				Packet.S2C.Recall.Struct newRecall = Helper.RecallDecode(args.PacketData);
+			if (args.PacketData[0] != Packet.S2C.Recall.Header) 
+				return;
+			var newRecall = Helper.RecallDecode(args.PacketData);
 
-				PlayerInfo playerInfo =
-					_playerInfo.Find(x => x.Champ.NetworkId == newRecall.UnitNetworkId).UpdateRecall(newRecall);
-				//Packet.S2C.Recall.Decoded(args.PacketData)
+			var playerInfo =
+				_playerInfo.Find(x => x.Champ.NetworkId == newRecall.UnitNetworkId).UpdateRecall(newRecall);
+			//Packet.S2C.Recall.Decoded(args.PacketData)
 
-				if(PUC.Menu.Item("debugMode").GetValue<bool>())
-					Game.PrintChat(playerInfo.Champ.ChampionName + ": " + playerInfo.Recall.Status + " duration: " +
-								   playerInfo.Recall.Duration + " guessed health: " + Helper.GetTargetHealth(playerInfo) +
-								   " lastseen: " + playerInfo.LastSeen + " health: " + playerInfo.Champ.Health +
-								   " own-ultdamage: " +
-								   (float)Helper.GetUltDamage(ObjectManager.Player, playerInfo.Champ) *
-								   UltInfo[ObjectManager.Player.ChampionName].DamageMultiplicator);
-			}
+			if(PUC.Menu.Item("debugMode").GetValue<bool>())
+				Game.PrintChat(playerInfo.Champ.ChampionName + ": " + playerInfo.Recall.Status + " duration: " +
+				               playerInfo.Recall.Duration + " guessed health: " + Helper.GetTargetHealth(playerInfo) +
+				               " lastseen: " + playerInfo.LastSeen + " health: " + playerInfo.Champ.Health +
+				               " own-ultdamage: " +
+				               (float)Helper.GetUltDamage(ObjectManager.Player, playerInfo.Champ) *
+				               UltInfo[ObjectManager.Player.ChampionName].DamageMultiplicator);
 		}
 
 		private struct UltData
@@ -329,13 +327,10 @@ namespace Primes_Ultimate_Carry
 
 			public override string ToString()
 			{
-				string drawtext = Champ.ChampionName + ": " + Recall.Status; //change to better string
-
-				float countdown = GetRecallCountdown() / 1000f;
-
+				var drawtext = Champ.ChampionName + ": " + Recall.Status; //change to better string
+				var countdown = GetRecallCountdown() / 1000f;
 				if(countdown > 0)
 					drawtext += " (" + countdown.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) + "s)";
-
 				return drawtext;
 			}
 		}
@@ -344,10 +339,7 @@ namespace Primes_Ultimate_Carry
 		{
 			public static T GetSafeMenuItem<T>(MenuItem item)
 			{
-				if(item != null)
-					return item.GetValue<T>();
-
-				return default(T);
+				return item != null ? item.GetValue<T>() : default(T);
 			}
 
 			public static float GetTargetHealth(PlayerInfo playerInfo)
@@ -355,7 +347,7 @@ namespace Primes_Ultimate_Carry
 				if(playerInfo.Champ.IsVisible)
 					return playerInfo.Champ.Health;
 
-				float predictedhealth = playerInfo.Champ.Health +
+				var predictedhealth = playerInfo.Champ.Health +
 										playerInfo.Champ.HPRegenRate *
 										((Environment.TickCount - playerInfo.LastSeen + playerInfo.GetRecallCountdown()) /
 										 1000f);
@@ -368,25 +360,23 @@ namespace Primes_Ultimate_Carry
 				if(source.ChampionName == "Karthus")
 					return delay * 1000;
 
-				float distance = Vector3.Distance(source.ServerPosition, targetpos);
+				var distance = Vector3.Distance(source.ServerPosition, targetpos);
 
-				float missilespeed = speed;
+				var missilespeed = speed;
 
-				if(source.ChampionName == "Jinx" && distance > 1350)
-				//1700 = missilespeed, 2200 = missilespeed after acceleration, 1350 acceleration starts, 1500 = fully acceleration
-				{
-					const float accelerationrate = 0.3f; //= (1500f - 1350f) / (2200 - speed), 1 unit = 0.3units/second
+				if (source.ChampionName != "Jinx" || !(distance > 1350)) 
+					return (distance/missilespeed + delay)*1000;
+				const float accelerationrate = 0.3f; //= (1500f - 1350f) / (2200 - speed), 1 unit = 0.3units/second
 
-					float acceldifference = distance - 1350f;
+				var acceldifference = distance - 1350f;
 
-					if(acceldifference > 150f) //it only accelerates 150 units
-						acceldifference = 150f;
+				if(acceldifference > 150f) //it only accelerates 150 units
+					acceldifference = 150f;
 
-					float difference = distance - 1500f;
+				var difference = distance - 1500f;
 
-					missilespeed = (1350f * speed + acceldifference * (speed + accelerationrate * acceldifference) +
-									difference * 2200f) / distance;
-				}
+				missilespeed = (1350f * speed + acceldifference * (speed + accelerationrate * acceldifference) +
+				                difference * 2200f) / distance;
 
 				return (distance / missilespeed + delay) * 1000;
 			}
@@ -417,7 +407,7 @@ namespace Primes_Ultimate_Carry
 
 				recall.Status = Packet.S2C.Recall.RecallStatus.Unknown;
 
-				bool teleport = false;
+				var teleport = false;
 
 				if(BitConverter.ToString(reader.ReadBytes(6)) != "00-00-00-00-00-00")
 				{
@@ -434,42 +424,41 @@ namespace Primes_Ultimate_Carry
 
 				var champ = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(recall.UnitNetworkId);
 
-				if(champ != null)
-				{
-					if(teleport)
-						recall.Duration = 3500;
-					else
+				if (champ == null)
+					return recall;
+				if(teleport)
+					recall.Duration = 3500;
+				else
 					//use masteries to detect recall duration, because spelldata is not initialized yet when enemy has not been seen
-					{
-						recall.Duration = Map == Utility.Map.MapType.CrystalScar ? 4500 : 8000;
+				{
+					recall.Duration = Map == Utility.Map.MapType.CrystalScar ? 4500 : 8000;
 
-						if(champ.Masteries.Any(x => x.Page == MasteryPage.Utility && x.Id == 65 && x.Points == 1))
-							recall.Duration -= Map == Utility.Map.MapType.CrystalScar ? 500 : 1000;
-						//phasewalker mastery
-					}
+					if(champ.Masteries.Any(x => x.Page == MasteryPage.Utility && x.Id == 65 && x.Points == 1))
+						recall.Duration -= Map == Utility.Map.MapType.CrystalScar ? 500 : 1000;
+					//phasewalker mastery
+				}
 
-					int time = Environment.TickCount - Game.Ping;
+				var time = Environment.TickCount - Game.Ping;
 
-					if(!RecallT.ContainsKey(recall.UnitNetworkId))
-						RecallT.Add(recall.UnitNetworkId, time);
+				if(!RecallT.ContainsKey(recall.UnitNetworkId))
+					RecallT.Add(recall.UnitNetworkId, time);
 					//will result in status RecallStarted, which would be wrong if the assembly was to be loaded while somebody recalls
+				else
+				{
+					if(RecallT[recall.UnitNetworkId] == 0)
+						RecallT[recall.UnitNetworkId] = time;
 					else
 					{
-						if(RecallT[recall.UnitNetworkId] == 0)
-							RecallT[recall.UnitNetworkId] = time;
+						if(time - RecallT[recall.UnitNetworkId] > recall.Duration - 75)
+							recall.Status = teleport
+								? Packet.S2C.Recall.RecallStatus.TeleportEnd
+								: Packet.S2C.Recall.RecallStatus.RecallFinished;
 						else
-						{
-							if(time - RecallT[recall.UnitNetworkId] > recall.Duration - 75)
-								recall.Status = teleport
-									? Packet.S2C.Recall.RecallStatus.TeleportEnd
-									: Packet.S2C.Recall.RecallStatus.RecallFinished;
-							else
-								recall.Status = teleport
-									? Packet.S2C.Recall.RecallStatus.TeleportAbort
-									: Packet.S2C.Recall.RecallStatus.RecallAborted;
+							recall.Status = teleport
+								? Packet.S2C.Recall.RecallStatus.TeleportAbort
+								: Packet.S2C.Recall.RecallStatus.RecallAborted;
 
-							RecallT[recall.UnitNetworkId] = 0; //recall aborted or finished, reset status
-						}
+						RecallT[recall.UnitNetworkId] = 0; //recall aborted or finished, reset status
 					}
 				}
 
@@ -530,150 +519,104 @@ namespace Primes_Ultimate_Carry
 			public static double CalcPhysicalDmg(double dmg, Obj_AI_Hero source, Obj_AI_Base enemy)
 			{
 				bool doubleedgedsword = false, havoc = false;
-				int executioner = 0;
+				var executioner = 0;
 
-				foreach(Mastery mastery in source.Masteries)
+				foreach (var mastery in source.Masteries.Where(mastery => mastery.Page == MasteryPage.Offense))
 				{
-					if(mastery.Page == MasteryPage.Offense)
+					switch(mastery.Id)
 					{
-						switch(mastery.Id)
-						{
-							case 65:
-								doubleedgedsword = (mastery.Points == 1);
-								break;
-							case 146:
-								havoc = (mastery.Points == 1);
-								break;
-							case 132:
-								break;
-							case 100:
-								executioner = mastery.Points;
-								break;
-							case 68:
-								break;
-						}
+						case 65:
+							doubleedgedsword = (mastery.Points == 1);
+							break;
+						case 146:
+							havoc = (mastery.Points == 1);
+							break;
+						case 100:
+							executioner = mastery.Points;
+							break;
 					}
 				}
 
 				double additionaldmg = 0;
-				if(doubleedgedsword)
-				{
-					if(source.CombatType == GameObjectCombatType.Melee)
-					{
-						additionaldmg += dmg * 0.02;
-					}
+				if (doubleedgedsword)
+					if (source.CombatType == GameObjectCombatType.Melee)
+						additionaldmg += dmg*0.02;
 					else
-					{
-						additionaldmg += dmg * 0.015;
-					}
-				}
+						additionaldmg += dmg*0.015;
 
-				if(havoc)
-				{
-					additionaldmg += dmg * 0.03;
-				}
+				if (havoc)
+					additionaldmg += dmg*0.03;
 
-				if(executioner > 0)
-				{
-					if(executioner == 1)
+				if (executioner > 0)
+					switch (executioner)
 					{
-						if((enemy.Health / enemy.MaxHealth) * 100 < 20)
-						{
-							additionaldmg += dmg * 0.05;
-						}
+						case 1:
+							if ((enemy.Health/enemy.MaxHealth)*100 < 20)
+								additionaldmg += dmg*0.05;
+							break;
+						case 2:
+							if ((enemy.Health/enemy.MaxHealth)*100 < 35)
+								additionaldmg += dmg*0.05;
+							break;
+						case 3:
+							if ((enemy.Health/enemy.MaxHealth)*100 < 50)
+								additionaldmg += dmg*0.05;
+							break;
 					}
-					else if(executioner == 2)
-					{
-						if((enemy.Health / enemy.MaxHealth) * 100 < 35)
-						{
-							additionaldmg += dmg * 0.05;
-						}
-					}
-					else if(executioner == 3)
-					{
-						if((enemy.Health / enemy.MaxHealth) * 100 < 50)
-						{
-							additionaldmg += dmg * 0.05;
-						}
-					}
-				}
 
 				double newarmor = enemy.Armor * source.PercentArmorPenetrationMod;
-				double dmgreduction = 100 / (100 + newarmor - source.FlatArmorPenetrationMod);
+				var dmgreduction = 100 / (100 + newarmor - source.FlatArmorPenetrationMod);
 				return (((dmg + additionaldmg) * dmgreduction));
 			}
 
 			public static double CalcMagicDmg(double dmg, Obj_AI_Hero source, Obj_AI_Base enemy)
 			{
 				bool doubleedgedsword = false, havoc = false;
-				int executioner = 0;
+				var executioner = 0;
 
-				foreach(Mastery mastery in source.Masteries)
+				foreach (var mastery in source.Masteries.Where(mastery => mastery.Page == MasteryPage.Offense))
 				{
-					if(mastery.Page == MasteryPage.Offense)
+					switch(mastery.Id)
 					{
-						switch(mastery.Id)
-						{
-							case 65:
-								doubleedgedsword = (mastery.Points == 1);
-								break;
-							case 146:
-								havoc = (mastery.Points == 1);
-								break;
-							case 132:
-								break;
-							case 100:
-								executioner = mastery.Points;
-								break;
-							case 68:
-								break;
-						}
+						case 65:
+							doubleedgedsword = (mastery.Points == 1);
+							break;
+						case 146:
+							havoc = (mastery.Points == 1);
+							break;
+						case 100:
+							executioner = mastery.Points;
+							break;
 					}
 				}
 
 				double additionaldmg = 0;
-				if(doubleedgedsword)
-				{
-					if(source.CombatType == GameObjectCombatType.Melee)
-					{
-						additionaldmg = dmg * 0.02;
-					}
+				if (doubleedgedsword)
+					if (source.CombatType == GameObjectCombatType.Melee)
+						additionaldmg = dmg*0.02;
 					else
+						additionaldmg = dmg*0.015;
+				if (havoc)
+					additionaldmg += dmg*0.03;
+				if (executioner > 0)
+					switch (executioner)
 					{
-						additionaldmg = dmg * 0.015;
+						case 1:
+							if ((enemy.Health/enemy.MaxHealth)*100 < 20)
+								additionaldmg += dmg*0.05;
+							break;
+						case 2:
+							if ((enemy.Health/enemy.MaxHealth)*100 < 35)
+								additionaldmg += dmg*0.05;
+							break;
+						case 3:
+							if ((enemy.Health/enemy.MaxHealth)*100 < 50)
+								additionaldmg += dmg*0.05;
+							break;
 					}
-				}
-				if(havoc)
-				{
-					additionaldmg += dmg * 0.03;
-				}
-				if(executioner > 0)
-				{
-					if(executioner == 1)
-					{
-						if((enemy.Health / enemy.MaxHealth) * 100 < 20)
-						{
-							additionaldmg += dmg * 0.05;
-						}
-					}
-					else if(executioner == 2)
-					{
-						if((enemy.Health / enemy.MaxHealth) * 100 < 35)
-						{
-							additionaldmg += dmg * 0.05;
-						}
-					}
-					else if(executioner == 3)
-					{
-						if((enemy.Health / enemy.MaxHealth) * 100 < 50)
-						{
-							additionaldmg += dmg * 0.05;
-						}
-					}
-				}
 
 				double newspellblock = enemy.SpellBlock * source.PercentMagicPenetrationMod;
-				double dmgreduction = 100 / (100 + newspellblock - source.FlatMagicPenetrationMod);
+				var dmgreduction = 100 / (100 + newspellblock - source.FlatMagicPenetrationMod);
 				return (((dmg + additionaldmg) * dmgreduction));
 			}
 		}
