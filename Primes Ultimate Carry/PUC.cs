@@ -28,7 +28,7 @@ namespace Primes_Ultimate_Carry
 
 			Player = ObjectManager.Player;
 			Menu = new Menu("Primes Ultimate Carry", Player.ChampionName + "UltimateCarry", true);
-			
+
 			var infoMenu = new Menu("Primes Information", "Primes_Info");
 			PrimesInfo.AddtoMenu(infoMenu);
 
@@ -47,7 +47,29 @@ namespace Primes_Ultimate_Carry
 			var activatorMenu = new Menu("Primes Activator", "Primes_Activator");
 			Activator.AddtoMenu(activatorMenu);
 
-			//if(Utility.Map.GetMap()._MapType == Utility.Map.MapType.SummonersRift ||
+			var loadbaseult = false;
+			switch(Player.ChampionName)
+			{
+				case "Ashe":
+					loadbaseult = true;
+					break;
+				case "Draven":
+					loadbaseult = true;
+					break;
+				case "Ezreal":
+					loadbaseult = true;
+					break;
+				case "jinx":
+					loadbaseult = true;
+					break;
+			}
+			if(loadbaseult)
+			{
+				var baseUltMenu = new Menu("Primes BaseUlt", "Primes_BaseUlt");
+				BaseUlt.AddtoMenu(baseUltMenu);
+			}
+
+		//if(Utility.Map.GetMap()._MapType == Utility.Map.MapType.SummonersRift ||
 			//	Utility.Map.GetMap()._MapType == Utility.Map.MapType.TwistedTreeline)
 			//{
 			//	var tarzanMenu = new Menu("Primes Tarzan", "Primes_Tarzan");
@@ -79,6 +101,10 @@ namespace Primes_Ultimate_Carry
 
 		private void Drawing_OnDraw(EventArgs args)
 		{
+			foreach (var buff in Player.Buffs)
+			{
+				Chat.Print(buff.Name);
+			}
 			PrimesInfo.Draw();
 			TargetSelector.Draw();
 			SideBar.Draw();

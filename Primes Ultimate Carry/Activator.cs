@@ -636,6 +636,8 @@ namespace Primes_Ultimate_Carry
 			{
 				try
 				{
+					if (PUC.Player.HasBuff("Recall") || Utility.InShopRange() || Utility.InFountain())
+						return;
 					if(PUC.Menu.Item("act_potionmanager_HealthPotion").GetValue<bool>())
 					{
 						if(GetPlayerHealthPercentage() <= PUC.Menu.Item("act_potionmanager_HealthPercent").GetValue<Slider>().Value)
