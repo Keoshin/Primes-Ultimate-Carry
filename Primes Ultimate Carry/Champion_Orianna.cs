@@ -54,7 +54,7 @@ namespace Primes_Ultimate_Carry
 			AddManaManager(ChampionMenu.SubMenu(PUC.Player.ChampionName + "Harass"),"ManaManager_Harass",40);
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Harass").AddItem(new MenuItem("useQ_Harass", "= Use Q").SetValue(true));
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Harass").AddItem(new MenuItem("useW_Harass", "= Use W").SetValue(true));
-			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Harass").AddItem(new MenuItem("Harass_Auto", "= AutoHarras").SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Toggle)));
+			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Harass").AddItem(new MenuItem("useHarass_Auto", "= AutoHarras").SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Toggle)));
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Harass").AddItem(new MenuItem("sep1", "========="));
 
 			ChampionMenu.AddSubMenu(new Menu("LaneClear", PUC.Player.ChampionName + "LaneClear"));
@@ -114,7 +114,7 @@ namespace Primes_Ultimate_Carry
 
 			if(ChampionMenu.Item("Draw_W").GetValue<bool>())
 				if(W.Level > 0)
-					Utility.DrawCircle(ObjectManager.Player.Position, W.Range, W.IsReady() ? Color.Green : Color.Red);
+					Utility.DrawCircle(Ball.BallPosition, W.Range, W.IsReady() ? Color.Green : Color.Red);
 
 			if(ChampionMenu.Item("Draw_E").GetValue<bool>())
 				if(E.Level > 0)
@@ -122,7 +122,7 @@ namespace Primes_Ultimate_Carry
 
 			if(ChampionMenu.Item("Draw_R").GetValue<bool>())
 				if(R.Level > 0)
-					Utility.DrawCircle(ObjectManager.Player.Position, R.Range, R.IsReady() ? Color.Green : Color.Red);
+					Utility.DrawCircle(Ball.BallPosition, R.Range, R.IsReady() ? Color.Green : Color.Red);
 		}
 
 		private void OnUpdate(EventArgs args)
@@ -130,8 +130,6 @@ namespace Primes_Ultimate_Carry
 			CastE();
 			CastW();
 			CastR();
-			//if(ChampionMenu.Item("Harass_Auto").GetValue<bool>())
-			//	CastQ();
 			switch(Orbwalker.CurrentMode)
 			{
 				case Orbwalker.Mode.Combo:
@@ -149,9 +147,11 @@ namespace Primes_Ultimate_Carry
 					break;
 				case Orbwalker.Mode.RunlikeHell:
 					RunlikeHell();
-					break;
+					break;			
 			}
-		
+
+			if(ChampionMenu.Item("useHarass_Auto").GetValue<KeyBind>().Active )
+				CastQ();
 		}
 
 		private void LaneClear()
@@ -232,6 +232,10 @@ namespace Primes_Ultimate_Carry
 						W.Cast();
 					break;
 			}
+			if(ChampionMenu.Item("useHarass_Auto").GetValue<KeyBind>().Active)
+				if(ManamanagerAllowCast("ManaManager_Harass"))
+					if(EnemysinRange(W.Range, 1, Ball.BallPosition))
+						W.Cast();
 		}
 
 		private void CastE()
@@ -338,7 +342,7 @@ namespace Primes_Ultimate_Carry
 			public bool IsonMe;
 			public BallControl()
 			{
-				Game.OnGameUpdate += CheckBallLocation;
+				Drawing.OnDraw  += CheckBallLocation;
 				Obj_AI_Base.OnProcessSpellCast += OnSpellcast;
 			}
 
