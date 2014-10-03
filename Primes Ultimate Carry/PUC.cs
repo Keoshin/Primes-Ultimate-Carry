@@ -101,10 +101,6 @@ namespace Primes_Ultimate_Carry
 
 		private void Drawing_OnDraw(EventArgs args)
 		{
-			foreach (var buff in Player.Buffs)
-			{
-				Chat.Print(buff.Name);
-			}
 			PrimesInfo.Draw();
 			TargetSelector.Draw();
 			SideBar.Draw();
