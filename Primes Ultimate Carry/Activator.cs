@@ -605,7 +605,7 @@ namespace Primes_Ultimate_Carry
 						MinCharges = 0,
 						ItemId = (ItemId) 2010,
 						Priority = 4,
-						TypeList = new List<PotionType> {PotionType.Health, PotionType.Mana}
+						TypeList = new List<PotionType> {PotionType.Health}
 					},
 					new Potion
 					{

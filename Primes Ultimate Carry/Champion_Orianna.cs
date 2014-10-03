@@ -130,8 +130,8 @@ namespace Primes_Ultimate_Carry
 			CastE();
 			CastW();
 			CastR();
-			if(ChampionMenu.Item("Harass_Auto").GetValue<bool>())
-				CastQ();
+			//if(ChampionMenu.Item("Harass_Auto").GetValue<bool>())
+			//	CastQ();
 			switch(Orbwalker.CurrentMode)
 			{
 				case Orbwalker.Mode.Combo:
