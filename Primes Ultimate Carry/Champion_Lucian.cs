@@ -117,18 +117,22 @@ namespace Primes_Ultimate_Carry
 			switch(args.SData.Name)
 			{
 				case "LucianQ":
+					UsedSkill();
 					HavePassiveUp = true;
 					Utility.DelayAction.Add(500, SetPassive);
 					break;
 				case "LucianW":
+					UsedSkill();
 					HavePassiveUp = true;
 					Utility.DelayAction.Add(500, SetPassive);
 					break;
 				case "LucianE":
+					UsedSkill();
 					HavePassiveUp = true;
 					Utility.DelayAction.Add(500, SetPassive);
 					break;
 				case "LucianR":
+					UsedSkill();
 					HavePassiveUp = true;
 					Utility.DelayAction.Add(500, SetPassive);
 					break;

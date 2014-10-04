@@ -22,7 +22,7 @@ namespace Primes_Ultimate_Carry
 		public PUC()
 		{
 			Game.PrintChat("======  Primes Ultimate Carry Loaded! ======");
-			Game.PrintChat("Beta version v 0.9");
+			Game.PrintChat("Beta version v 0.10");
 			Game.PrintChat("This is a Beta version, not all is active,");
 			Game.PrintChat("=================================");
 
@@ -47,6 +47,8 @@ namespace Primes_Ultimate_Carry
 			var activatorMenu = new Menu("Primes Activator", "Primes_Activator");
 			Activator.AddtoMenu(activatorMenu);
 
+			var autolevelMenu = new Menu("Primes AutoLevel", "Primes_AutoLevel");
+			AutoLevel.AddtoMenu(autolevelMenu);
 			var loadbaseult = false;
 			switch(Player.ChampionName)
 			{

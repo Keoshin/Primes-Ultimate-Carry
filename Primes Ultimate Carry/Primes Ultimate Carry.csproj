@@ -53,6 +53,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoLevel.cs" />
     <Compile Include="BaseUlt.cs" />
     <Compile Include="Champion_Aatrox.cs" />
     <Compile Include="Activator.cs" />
