@@ -381,12 +381,20 @@ namespace Primes_Ultimate_Carry
 					});
 				}
 
-				if (castedSlot != SpellSlot.E) 
-					return;
-				if (!args.Target.IsMe && args.Target.IsAlly)
+				if(castedSlot == SpellSlot.E)
+				{
 					IsMoving = true;
-				if (args.Target.IsMe && BallPosition != ObjectManager.Player.ServerPosition)
-					IsMoving = true;
+					Utility.DelayAction.Add((int)Math.Max(1, 1000 * args.End.Distance(BallPosition) / 1700), () =>
+					{
+						IsMoving = false;
+					});
+				}
+				//if (castedSlot != SpellSlot.E) 
+				//	return;
+				//if (!args.Target.IsMe && args.Target.IsAlly)
+				//	IsMoving = true;
+				//if (args.Target.IsMe && BallPosition != ObjectManager.Player.ServerPosition)
+				//	IsMoving = true;
 			}
 		}
 	}
