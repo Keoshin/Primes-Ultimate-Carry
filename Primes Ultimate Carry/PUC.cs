@@ -22,7 +22,7 @@ namespace Primes_Ultimate_Carry
 		public PUC()
 		{
 			Game.PrintChat("======  Primes Ultimate Carry Loaded! ======");
-			Game.PrintChat("Beta version v 0.12");
+			Game.PrintChat("Beta version v 0.13");
 			Game.PrintChat("This is a Beta version, not all is active,");
 			Game.PrintChat("=================================");
 

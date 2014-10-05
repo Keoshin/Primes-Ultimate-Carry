@@ -22,6 +22,7 @@ namespace Primes_Ultimate_Carry
 		private static Obj_AI_Base _lastTarget;
 		private const float LaneClearWaitTimeMod = 2f;
 		public static int LastMovement = 0;
+		public static bool CustomOrbwalkMode;
 
 		public delegate void BeforeAttackEvenH(BeforeAttackEventArgs args);
 		public delegate void OnTargetChangeH(Obj_AI_Base oldTarget, Obj_AI_Base newTarget);
@@ -99,9 +100,10 @@ namespace Primes_Ultimate_Carry
 			if(CurrentMode == Mode.None || Player.IsChannelingImportantSpell() || MenuGUI.IsChatOpen)
 				return;
 			//player have buff return todo
+			if (CustomOrbwalkMode) 
+				return;
 			var target = GetPossibleTarget();
 			Orbwalk(Game.CursorPos, target);
-
 		}
 
 		private static void OnProcessSpell(Obj_AI_Base unit, GameObjectProcessSpellCastEventArgs spell)
@@ -143,7 +145,7 @@ namespace Primes_Ultimate_Carry
 			return AttackResets.Contains(name.ToLower());
 		}
 
-		private static void Orbwalk(Vector3 goalPosition, Obj_AI_Base target)
+		public static void Orbwalk(Vector3 goalPosition, Obj_AI_Base target)
 		{
 			if(target != null && CanAttack() && !PUC.Menu.Item("orb_noattack").GetValue<bool>())
 			{
@@ -190,12 +192,12 @@ namespace Primes_Ultimate_Carry
 					Player.IssueOrder(GameObjectOrder.HoldPosition, Player.ServerPosition);
 				return;
 			}
-			var point = Player.ServerPosition +
-			200 * (position.To2D() - Player.ServerPosition.To2D()).Normalized().To3D();
-			Player.IssueOrder(GameObjectOrder.MoveTo, point);
+			//var point = Player.ServerPosition +
+			//200 * (position.To2D() - Player.ServerPosition.To2D()).Normalized().To3D();
+			Player.IssueOrder(GameObjectOrder.MoveTo, position);
 		}
 
-		private static Obj_AI_Base GetPossibleTarget()
+		public static Obj_AI_Base GetPossibleTarget()
 		{
 			Obj_AI_Base tempTarget = null;
 

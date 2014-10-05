@@ -151,6 +151,13 @@ namespace Primes_Ultimate_Carry
 			return cost1 + cost2 + cost3 + cost4 <= PUC.Player.Mana;
 		}
 
+		public Vector3 GetModifiedPosition(Vector3 from, Vector3 to, float range)
+		{
+			var newpos = to - from;
+			newpos.Normalize();
+			return from + (newpos * range);
+		}
+
 		
 
 	}
