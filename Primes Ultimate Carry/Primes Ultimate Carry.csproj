@@ -58,6 +58,7 @@
     <Compile Include="Champion_Aatrox.cs" />
     <Compile Include="Activator.cs" />
     <Compile Include="Champion.cs" />
+    <Compile Include="Champion_Draven.cs" />
     <Compile Include="Champion_Gnar.cs" />
     <Compile Include="Champion_Lucian.cs" />
     <Compile Include="Champion_Orianna.cs" />

@@ -30,7 +30,7 @@ namespace Primes_Ultimate_Carry
 		private void SetSpells()
 		{
 			Q = new Spell(SpellSlot.Q, 825);
-			Q.SetSkillshot(0f, 135, 1150, false, SkillshotType.SkillshotLine);
+			Q.SetSkillshot(0, 135, 1150, false, SkillshotType.SkillshotLine);
 		
 			W = new Spell(SpellSlot.W, 220);
 			
