@@ -8,6 +8,8 @@ namespace Primes_Ultimate_Carry
 {
 	class Orbwalker
 	{
+		public static bool AllowDrawing = true;
+
 		private static readonly string[] AttackResets = { "dariusnoxiantacticsonh", "fioraflurry", "garenq", "hecarimrapidslash", "jaxempowertwo", "jaycehypercharge", "leonashieldofdaybreak", "luciane", "lucianq", "monkeykingdoubleattack", "mordekaisermaceofspades", "nasusq", "nautiluspiercinggaze", "netherblade", "parley", "poppydevastatingblow", "powerfist", "renektonpreexecute", "rengarq", "shyvanadoubleattack", "sivirw", "takedown", "talonnoxiandiplomacy", "trundletrollsmash", "vaynetumble", "vie", "volibearq", "xenzhaocombotarget", "yorickspectral" };
 		private static readonly string[] NoAttacks = { "jarvanivcataclysmattack", "monkeykingdoubleattack", "shyvanadoubleattack", "shyvanadoubleattackdragon", "zyragraspingplantattack", "zyragraspingplantattack2", "zyragraspingplantattackfire", "zyragraspingplantattack2fire" };
 		private static readonly string[] Attacks = { "caitlynheadshotmissile", "frostarrow", "garenslash2", "kennenmegaproc", "lucianpassiveattack", "masteryidoublestrike", "quinnwenhanced", "renektonexecute", "renektonsuperexecute", "rengarnewpassivebuffdash", "trundleq", "xenzhaothrust", "xenzhaothrust2", "xenzhaothrust3" };
@@ -56,6 +58,7 @@ namespace Primes_Ultimate_Carry
 			tempMenu.AddItem(new MenuItem("orb_MeleePrediction", "= Meele Prediction ").SetValue(false));
 			tempMenu.AddItem(new MenuItem("orb_nomove", "= Disable Move ").SetValue(false));
 			tempMenu.AddItem(new MenuItem("orb_noattack", "= Disable Attack ").SetValue(false));
+			tempMenu.AddItem(new MenuItem("orb_draw", "= Draw AA Range ").SetValue(true));
 			tempMenu.AddItem(new MenuItem("orb_sep1", "=== Keys"));
 			tempMenu.AddItem(new MenuItem("orbkey_Combo", "= Combo Key").SetValue(new KeyBind(32, KeyBindType.Press)));
 			tempMenu.AddItem(new MenuItem("orbkey_Harass", "= Harass Key").SetValue(new KeyBind("C".ToCharArray()[0], KeyBindType.Press)));
@@ -71,6 +74,7 @@ namespace Primes_Ultimate_Carry
 
 		internal static void Draw()
 		{
+			if(PUC.Menu.Item("orb_draw").GetValue<bool>() && AllowDrawing)
 			Utility.DrawCircle(Player.Position, GetAutoAttackRangeto(), Color.Lavender);
 		}
 

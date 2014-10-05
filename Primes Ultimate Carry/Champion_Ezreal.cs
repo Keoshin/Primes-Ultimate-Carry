@@ -93,6 +93,8 @@ namespace Primes_Ultimate_Carry
 
 		private void OnDraw(EventArgs args)
 		{
+			Orbwalker.AllowDrawing = !ChampionMenu.Item("Draw_Disabled").GetValue<bool>();
+
 			if(ChampionMenu.Item("Draw_Disabled").GetValue<bool>())
 				return;
 

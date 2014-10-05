@@ -100,6 +100,8 @@ namespace Primes_Ultimate_Carry
 
 		private void OnDraw(EventArgs args)
 		{
+			Orbwalker.AllowDrawing = !ChampionMenu.Item("Draw_Disabled").GetValue<bool>();
+
 			if(ChampionMenu.Item("Draw_Disabled").GetValue<bool>())
 				return;
 
@@ -283,7 +285,7 @@ namespace Primes_Ultimate_Carry
 		{
 			if (collisionId == -1)
 				return;
-			var center = ObjectManager.Player.Position;
+			var center = PUC.Player.Position;
 			const int points = 36;
 			const int radius = 300;
 
