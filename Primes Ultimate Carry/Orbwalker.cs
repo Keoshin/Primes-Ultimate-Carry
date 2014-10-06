@@ -122,7 +122,7 @@ namespace Primes_Ultimate_Carry
 					FireOnTargetSwitch((Obj_AI_Base)spell.Target);
 					_lastTarget = (Obj_AI_Base)spell.Target;
 				}
-				if(unit.IsMelee())
+				if(unit.IsMelee() || unit.BaseSkinName == "Thresh" )
 					Utility.DelayAction.Add(
 						(int)(unit.AttackCastDelay * 1000 + Game.Ping * 0.5), () => FireAfterAttack(unit, _lastTarget));
 			}
@@ -219,7 +219,7 @@ namespace Primes_Ultimate_Carry
 			{
 				foreach(var minion in from minion in ObjectManager.Get<Obj_AI_Minion>().Where(minion => minion.IsValidTarget(GetAutoAttackRangeto(minion)) && minion.Health > 0)
 									  let time = (int)(Player.AttackCastDelay * 1000)  + Game.Ping / 2 - 100 +
-												 (int)(1000 * Player.Distance(minion) / (Player.IsMelee() ? float.MaxValue : Player.BasicAttack.MissileSpeed))
+												 (int)(1000 * Player.Distance(minion) / (Player.ChampionName == "Thresh" ? Player.BasicAttack.MissileSpeed :(Player.IsMelee() ? float.MaxValue : Player.BasicAttack.MissileSpeed)))
 									  let predHealth = HealthPrediction.GetHealthPrediction(minion, time, GetFarmDelay)
 									  where minion.Team != GameObjectTeam.Neutral &&
 											predHealth > 0 &&

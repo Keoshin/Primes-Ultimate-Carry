@@ -122,7 +122,7 @@ namespace Primes_Ultimate_Carry
 		}
 		public bool EnemysinRange(float range, int min , Vector3  pos)
 		{
-			return min <= PUC.AllHerosEnemy.Count(hero => hero.Position.Distance(pos) < range && hero.IsValidTarget());
+			return min <= PUC.AllHerosEnemy.Count(hero => hero.Position.Distance(pos) < range && hero.IsValidTarget() && !hero.IsDead);
 		}
 
 		public void AddManaManager(Menu menu,string name,int basic)
@@ -158,7 +158,26 @@ namespace Primes_Ultimate_Carry
 			return from + (newpos * range);
 		}
 
-		
+		public void Cast_Shield_onFriend(Spell spell, int percent, bool skillshot = false)
+		{
+			if(!spell.IsReady())
+				return;
+			foreach(var friend in PUC.AllHerosFriend.Where(hero => hero.Distance(PUC.Player) <= spell.Range).Where(friend => friend.Health / friend.MaxHealth * 100 <= percent && EnemysinRange(600, 1, friend)))
+			{
+				if(skillshot)
+					spell.Cast(spell.GetPrediction(friend).CastPosition , UsePackets());
+				else
+					spell.CastOnUnit(friend, UsePackets());
+				return;
+			}
+		}
+
+		public Vector3 GetReversePosition(Vector3 positionMe, Vector3 positionEnemy)
+		{
+			var x = positionMe.X - positionEnemy.X;
+			var y = positionMe.Y - positionEnemy.Y;
+			return new Vector3(positionMe.X + x, positionMe.Y + y, positionMe.Z);
+		}
 
 	}
 }

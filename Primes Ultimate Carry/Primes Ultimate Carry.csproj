@@ -63,8 +63,8 @@
     <Compile Include="Champion_Lucian.cs" />
     <Compile Include="Champion_Orianna.cs" />
     <Compile Include="Champion_Ezreal.cs" />
+    <Compile Include="Champion_Thresh.cs" />
     <Compile Include="Chat.cs" />
-    <Compile Include="Class1.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

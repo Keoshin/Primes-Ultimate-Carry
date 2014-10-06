@@ -146,6 +146,10 @@ namespace Primes_Ultimate_Carry
 					if(ChampionMenu.Item("useQ_Lasthit").GetValue<bool>())
 						Cast_Basic_Farm(Q, true);
 					break;
+				case Orbwalker.Mode.RunlikeHell  :
+					if (ChampionMenu.Item("useE_RunLikeHell").GetValue<bool>() && E.IsReady())
+						E.Cast(GetModifiedPosition(PUC.Player.Position, Game.CursorPos, E.Range),UsePackets() );
+					break;
 			}
 		}
 
