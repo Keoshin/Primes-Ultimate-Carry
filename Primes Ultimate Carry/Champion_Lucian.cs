@@ -310,7 +310,7 @@ namespace Primes_Ultimate_Carry
 				}
 				for(var i = 10; i < 1070 - Q.Range; i = i + 10)
 				{
-					if(!(HitPosition(Q.GetPrediction(qCollisionChar).UnitPosition, i).Distance(Q.GetPrediction(target).UnitPosition) < 35))
+					if(!(HitPosition(Q.GetPrediction(qCollisionChar).UnitPosition, i).Distance(Q2.GetPrediction(target).UnitPosition) < 35))
 						continue;
 					Q.Cast(qCollisionChar, UsePackets());
 					UsedSkill();
@@ -554,7 +554,7 @@ namespace Primes_Ultimate_Carry
 							}
 							for(var i = 10; i < 1070 - Q.Range; i = i + 10)
 							{
-								if(!(HitPosition(Q.GetPrediction(obj).UnitPosition, i).Distance(Q.GetPrediction(enemy).UnitPosition) < 35))
+								if(!(HitPosition(Q.GetPrediction(obj).UnitPosition, i).Distance(Q2.GetPrediction(enemy).UnitPosition) < 35))
 									continue;
 								Q.Cast(obj);
 								DelayTick = Environment.TickCount;
