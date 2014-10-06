@@ -86,7 +86,6 @@ namespace Primes_Ultimate_Carry
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Misc").AddItem(new MenuItem("useCatchAxe_LaneClear", "= LaneClear CatchAxeRange").SetValue(new Slider(700, 0, 1000)));
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Misc").AddItem(new MenuItem("useCatchAxe_Lasthit", "= Lasthit CatchAxeRange").SetValue(new Slider(500, 0, 1000)));
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Misc").AddItem(new MenuItem("useW_SpeecBuffCatch", "= Use W to Catch Axes").SetValue(true));
-			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Misc").AddItem(new MenuItem("useQ_Stacks", "= Max Q Stacks").SetValue(new Slider(2, 1, 2)));
 			ChampionMenu.SubMenu(PUC.Player.ChampionName + "Misc").AddItem(new MenuItem("sep1", "========="));
 
 			ChampionMenu.AddSubMenu(new Menu("Drawing", PUC.Player.ChampionName + "Drawing"));
@@ -219,7 +218,7 @@ namespace Primes_Ultimate_Carry
 						if(canCatchAxeBuffed && !canCatchAxeNorm && W.IsReady())
 							W.Cast();
 						Orbwalker.CustomOrbwalkMode = true;
-						Orbwalker.Orbwalk(GetModifiedPosition(axe.Position, Game.CursorPos, 49), Orbwalker.GetPossibleTarget());
+						Orbwalker.Orbwalk(GetModifiedPosition(axe.Position, Game.CursorPos, 49 + PUC.Player.BoundingRadius / 2), Orbwalker.GetPossibleTarget());
 					}
 
 
@@ -278,7 +277,7 @@ namespace Primes_Ultimate_Carry
 		{
 			if(!Q.IsReady())
 				return;
-			if(ChampionMenu.Item("useQ_Stacks").GetValue<Slider>().Value < GetQStacks())
+			if(GetQStacks() > 0)
 				return;
 			var target = TargetSelector.GetAATarget();
 			if(target != null)

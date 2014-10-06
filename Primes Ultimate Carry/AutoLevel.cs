@@ -15,13 +15,46 @@ namespace Primes_Ultimate_Carry
 		private static void CreateList()
 		{
 			LevelsequenceList = new List<Levelsequence>();
+			// Aatrox
 			LevelsequenceList.Add(new Levelsequence("Aatrox", "UC Top", new List<int> { 3, 2, 1, 2, 3, 4, 2, 3, 2, 3, 4, 2, 3, 1, 1, 4, 1, 1, }));
 			LevelsequenceList.Add(new Levelsequence("Aatrox", "UC Mid", new List<int> { 3, 2, 1, 2, 2, 4, 3, 2, 3, 2, 4, 3, 3, 1, 1, 4, 1, 1, }));
 			LevelsequenceList.Add(new Levelsequence("Aatrox", "UC Jungle", new List<int> { 2, 1, 3, 2, 2, 4, 2, 3, 2, 3, 4, 3, 3, 1, 1, 4, 1, 1, }));
+			
+			// Caitlyn
+			LevelsequenceList.Add(new Levelsequence("Caitlyn", "WannabeCaitlyn Adc", new List<int> { 1, 3, 1, 2, 1, 4, 1, 3, 1, 3, 4, 3, 3, 2, 2, 4, 2, 2, })); // from Wannabe 
+			
+			// Ezreal
 			LevelsequenceList.Add(new Levelsequence("Ezreal", "BluEZreal Poke Escape Adc", new List<int> { 1, 3, 1, 3, 1, 4, 1, 3, 1, 3, 4, 3, 2, 3, 2, 4, 2, 2, })); // from Qtkzx 
-			//LevelsequenceList.Add(new Levelsequence("Gnar", "UC", new List<int> { 1, 3, 2, 1, 1, 4, 1, 2, 1, 2, 4, 2, 2, 3, 3, 4, 3, 3, }));
-			//LevelsequenceList.Add(new Levelsequence("Lucian", "UC", new List<int> { 1, 3, 2, 1, 1, 4, 1, 2, 1, 2, 4, 2, 2, 3, 3, 4, 3, 3, }));
-			//LevelsequenceList.Add(new Levelsequence("Orianna", "UC", new List<int> { 1, 3, 2, 1, 1, 4, 1, 2, 1, 2, 4, 2, 2, 3, 3, 4, 3, 3, }));
+			
+			// Khazix
+			LevelsequenceList.Add(new Levelsequence("Khazix", "WannabeKhazix Jungle", new List<int> { 2, 1, 3, 2, 2, 4, 2, 1, 2, 1, 4, 1, 1, 3, 3, 4, 3, 3, })); // from Wannabe 
+			
+			// LeeSin
+			LevelsequenceList.Add(new Levelsequence("LeeSin", "WannabeLeeSin Jungle", new List<int> { 1, 3, 2, 1, 1, 4, 1, 2, 1, 2, 4, 2, 2, 3, 3, 4, 3, 3, })); // from Wannabe 
+			
+			// Leona
+			LevelsequenceList.Add(new Levelsequence("Leona", "WannabeLeona Sup", new List<int> { 1, 3, 2, 2, 2, 4, 2, 1, 2, 1, 4, 1, 1, 3, 3, 4, 3, 3, })); // from Wannabe 
+			
+			// Lucian
+			LevelsequenceList.Add(new Levelsequence("Lucian", "WannabeLucian Adc", new List<int> { 1, 3, 1, 2, 1, 4, 1, 3, 1, 3, 4, 3, 3, 2, 2, 4, 2, 2, })); // from Wannabe  
+			
+			// Morgana
+			LevelsequenceList.Add(new Levelsequence("Morgana", "WannabeMorgana Sup", new List<int> { 1, 2, 3, 1, 1, 4, 1, 3, 1, 3, 4, 3, 3, 2, 2, 4, 2, 2, })); // from Wannabe 
+			
+			// Thresh
+			LevelsequenceList.Add(new Levelsequence("Thresh", "WannabeThresh Sup", new List<int> { 3, 1, 2, 3, 3, 4, 3, 1, 3, 1, 4, 1, 1, 2, 2, 4, 2, 2, })); // from Wannabe 
+			
+			// Tristana
+			LevelsequenceList.Add(new Levelsequence("Tristana", "WannabeTristana Adc", new List<int> { 3, 2, 1, 3, 3, 4, 1, 1, 1, 1, 4, 2, 2, 2, 2, 4, 3, 3, })); // from Wannabe 
+			
+			// Zed
+			LevelsequenceList.Add(new Levelsequence("Zed", "WannabeZed Mid", new List<int> { 1, 2, 3, 1, 1, 4, 1, 3, 1, 3, 4, 3, 3, 2, 2, 4, 2, 2, })); // from Wannabe 
+
+
+
+
+			
+			
 		}
 
 		internal static void AddtoMenu(Menu menu)
