@@ -207,7 +207,7 @@ namespace Primes_Ultimate_Carry
 						(axe.Position.Distance(Game.CursorPos) < ChampionMenu.Item("useCatchAxe_Lasthit").GetValue<Slider>().Value &&
 						Orbwalker.CurrentMode == Orbwalker.Mode.Lasthit))
 					{
-						if(canCatchAxeBuffed && !canCatchAxeNorm && W.IsReady())
+						if(canCatchAxeBuffed && !canCatchAxeNorm && W.IsReady() && !axe.Catching())
 							W.Cast();
 						Orbwalker.CustomOrbwalkMode = true;
 						Orbwalker.Orbwalk(GetModifiedPosition(axe.Position, Game.CursorPos, 49 + PUC.Player.BoundingRadius / 2), Orbwalker.GetPossibleTarget());
@@ -328,6 +328,11 @@ namespace Primes_Ultimate_Carry
 			public float DistanceToPlayer()
 			{
 				return ObjectManager.Player.Distance(Position);
+			}
+
+			public bool Catching()
+			{
+				return PUC.Player.Position.Distance(Position) < 49 + PUC.Player.BoundingRadius/2;
 			}
 		}
 	}

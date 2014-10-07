@@ -37,7 +37,10 @@ namespace Primes_Ultimate_Carry
 		public void AddSupportmode(Menu menu)
 		{
 			menu.AddSubMenu(new Menu("SupportMode", "SupportMode"));
-			menu.SubMenu("SupportMode").AddItem(new MenuItem("SubMode", "SupportMode active").SetValue(false));
+			menu.SubMenu("SupportMode").AddItem(new MenuItem("sup_sep0", "===== Support-Mode"));
+			menu.SubMenu("SupportMode").AddItem(new MenuItem("SubMode", "Support-Mode").SetValue(false));
+			menu.SubMenu("SupportMode").AddItem(new MenuItem("sup_sep1", "========="));
+			
 			HaveSupportMode = true;
 			Game.OnGameSendPacket += GameSendPacker_Supportmode;
 		}
@@ -49,10 +52,10 @@ namespace Primes_Ultimate_Carry
 			if(args.PacketData[0] != Packet.C2S.Move.Header)
 				return;
 			var decodedPacket = Packet.C2S.Move.Decoded(args.PacketData);
-			if (decodedPacket.MoveType != 3 ||
-			    (!Orbwalker.GetPossibleTarget().IsMinion || !ChampionMenu.Item("SubMode").GetValue<bool>())) 
-				return;
-			if(Orbwalker.Mode.Harass == Orbwalker.CurrentMode)
+			if (decodedPacket.MoveType != 3 || !Orbwalker.GetPossibleTarget().IsMinion ||
+			    !ChampionMenu.Item("SubMode").GetValue<bool>() || (Orbwalker.Mode.Harass != Orbwalker.CurrentMode)) return;
+			if (PUC.AllHerosFriend.Any(
+					hero => !hero.IsMe && !hero.IsDead && hero.Distance(Orbwalker.GetPossibleTarget()) <= hero.AttackRange + 200))
 				args.Process = false;
 		}
 

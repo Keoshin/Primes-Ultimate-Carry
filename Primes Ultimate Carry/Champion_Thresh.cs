@@ -164,6 +164,11 @@ namespace Primes_Ultimate_Carry
 					if(ChampionMenu.Item("useQ_Harass").GetValue<bool>() && Environment.TickCount - QFollowTick >= QFollowTime && ManamanagerAllowCast("ManaManager_Harass"))
 						if(Cast_BasicSkillshot_Enemy(Q) != null)
 							QFollowTick = Environment.TickCount;
+					if(ChampionMenu.Item("useE_Harass").GetValue<Slider>().Value > 0)
+						if(PUC.Player.Health / PUC.Player.MaxHealth * 100 > ChampionMenu.Item("useE_Harass").GetValue<Slider>().Value)
+							Cast_E("ToMe");
+						else
+							Cast_E();
 					if(ChampionMenu.Item("useW_Harass_safe").GetValue<bool>())
 						SafeFriendLatern();
 					break;
