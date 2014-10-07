@@ -481,9 +481,9 @@ namespace Primes_Ultimate_Carry
 			{
 				menu.AddSubMenu(new Menu(item.Name, "act_item_" + item.Id));
 				menu.SubMenu("act_item_" + item.Id).AddItem(new MenuItem("act_item_" + item.Id + "_sep0", "====== Block Spells for"));
-				menu.SubMenu("act_item_" + item.Id).AddItem(new MenuItem("act_item_" + item.Id + "_useCombo", "= Combo").SetValue(true));
-				menu.SubMenu("act_item_" + item.Id).AddItem(new MenuItem("act_item_" + item.Id + "_useHarass", "= Harass").SetValue(true));
-				menu.SubMenu("act_item_" + item.Id).AddItem(new MenuItem("act_item_" + item.Id + "_useLaneClear", "= LaneClear").SetValue(true));
+				menu.SubMenu("act_item_" + item.Id).AddItem(new MenuItem("act_item_" + item.Id + "_useCombo", "= Combo").SetValue(false));
+				menu.SubMenu("act_item_" + item.Id).AddItem(new MenuItem("act_item_" + item.Id + "_useHarass", "= Harass").SetValue(false));
+				menu.SubMenu("act_item_" + item.Id).AddItem(new MenuItem("act_item_" + item.Id + "_useLaneClear", "= LaneClear").SetValue(false));
 				menu.SubMenu("act_item_" + item.Id).AddItem(new MenuItem("act_item_" + item.Id + "_sep1", "========="));
 			}
 
