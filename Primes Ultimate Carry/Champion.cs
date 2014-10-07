@@ -12,6 +12,7 @@ namespace Primes_Ultimate_Carry
 		public Spell E;
 		public Spell R;
 		public Menu ChampionMenu;
+		public bool HaveSupportMode;
 
 		public Champion()
 		{
@@ -31,7 +32,28 @@ namespace Primes_Ultimate_Carry
 			ChampionMenu.SubMenu("Primes_Champion_Packets").AddItem(new MenuItem("Primes_Champion_Packets_sep0", "===== Settings"));
 			ChampionMenu.SubMenu("Primes_Champion_Packets").AddItem(new MenuItem("Primes_Champion_Packets_active", "= Use Packets").SetValue(true));
 			ChampionMenu.SubMenu("Primes_Champion_Packets").AddItem(new MenuItem("Primes_Champion_Packets_sep1", "========="));
+		}
 
+		public void AddSupportmode(Menu menu)
+		{
+			menu.AddSubMenu(new Menu("SupportMode", "SupportMode"));
+			menu.SubMenu("SupportMode").AddItem(new MenuItem("SubMode", "SupportMode active").SetValue(false));
+			HaveSupportMode = true;
+			Game.OnGameSendPacket += GameSendPacker_Supportmode;
+		}
+
+		private void GameSendPacker_Supportmode(GamePacketEventArgs args)
+		{
+			if (!HaveSupportMode)
+				return;
+			if(args.PacketData[0] != Packet.C2S.Move.Header)
+				return;
+			var decodedPacket = Packet.C2S.Move.Decoded(args.PacketData);
+			if (decodedPacket.MoveType != 3 ||
+			    (!Orbwalker.GetPossibleTarget().IsMinion || !ChampionMenu.Item("SubMode").GetValue<bool>())) 
+				return;
+			if(Orbwalker.Mode.Harass == Orbwalker.CurrentMode)
+				args.Process = false;
 		}
 
 		public MenuItem GetMenuItem(string name, string displayName)
