@@ -64,10 +64,11 @@ namespace Primes_Ultimate_Carry
 			}
 
 			var offensivemenu = new Menu("Offensive Items", "act_offensiveItem");
-			ItemManager.AddSupMenu(defensivemenu, offensivemenu);
+			var onhitmenu = new Menu("OnHit Items", "act_onhitItem");
+			ItemManager.AddSupMenu(defensivemenu, offensivemenu,onhitmenu);
 			tempMenu.AddSubMenu(defensivemenu);
 			tempMenu.AddSubMenu(offensivemenu);
-
+			tempMenu.AddSubMenu(onhitmenu);
 		}
 
 		private static void AddSummonerstoMenu(Menu menu)
@@ -106,6 +107,7 @@ namespace Primes_Ultimate_Carry
 						const int igniterange = 600;
 						foreach(var enemy in PUC.AllHerosEnemy.Where(hero => hero.IsValidTarget(igniterange) &&  PUC.Player.GetSummonerSpellDamage(hero,Damage.SummonerSpell.Ignite) > hero.Health))
 						{
+							if (spell.IsReady()) 
 							spell.CastSpell(enemy);
 							break;
 						}
@@ -133,12 +135,14 @@ namespace Primes_Ultimate_Carry
 								{
 									if(Utility.CountEnemysInRange(1000, friend) > 0)
 									{
+										if(spell.IsReady()) 
 										spell.CastSpell();
 										break;
 									}
 								}
 								else
 								{
+									if(spell.IsReady()) 
 									spell.CastSpell();
 									break;
 								}
@@ -149,12 +153,14 @@ namespace Primes_Ultimate_Carry
 								{
 									if(Utility.CountEnemysInRange(1000, friend) > 0)
 									{
+										if(spell.IsReady()) 
 										spell.CastSpell();
 										break;
 									}
 								}
 								else
 								{
+									if(spell.IsReady()) 
 									spell.CastSpell();
 									break;
 								}
@@ -177,12 +183,14 @@ namespace Primes_Ultimate_Carry
 						{
 							if(Utility.CountEnemysInRange(1000, PUC.Player) > 0)
 							{
+								if(spell.IsReady()) 
 								spell.CastSpell();
 								break;
 							}
 						}
 						else
 						{
+							if(spell.IsReady()) 
 							spell.CastSpell();
 							break;
 						}
@@ -192,9 +200,11 @@ namespace Primes_Ultimate_Carry
 						if (PUC.Menu.Item("act_barrier_ifEnemy2").GetValue<bool>())
 						{
 							if (Utility.CountEnemysInRange(1000, PUC.Player) > 0)
+								if(spell.IsReady()) 
 								spell.CastSpell();
 						}
 						else
+							if(spell.IsReady()) 
 							spell.CastSpell();
 					}
 					break;
@@ -207,12 +217,15 @@ namespace Primes_Ultimate_Carry
 						return;
 					var maxDps = maxDpsHero.BaseAttackDamage * maxDpsHero.AttackSpeedMod;
 					if(PUC.AllHerosFriend.Where(hero => hero.IsAlly && hero.Distance(ObjectManager.Player) <= range).Any(friend => friend.Health <= maxDps * PUC.Menu.Item("act_exhoust_killfriend").GetValue<Slider>().Value))
+						if(spell.IsReady()) 
 						spell.CastSpell(maxDpsHero);
 					if(PUC.Player.Health <= maxDps * PUC.Menu.Item("act_exhoust_killme").GetValue<Slider>().Value)
+						if(spell.IsReady()) 
 						spell.CastSpell(maxDpsHero);
 					break;
 					case Summoner.Cleanse:
 					if(BuffnamesCC.Any(bufftype => PUC.Player.HasBuffOfType(bufftype) && PUC.Menu.Item("act_cleanse_" + bufftype).GetValue< bool>()))
+						if(spell.IsReady()) 
 						spell.CastSpell();
 					break;
 			}
@@ -369,7 +382,7 @@ namespace Primes_Ultimate_Carry
 		{
 			public static List<Database.ActiveItem>  Itemlist;
 
-			internal static void AddSupMenu(Menu def, Menu off)
+			internal static void AddSupMenu(Menu def, Menu off,Menu onhit)
 			{
 				Itemlist = Database.GetActiveItemList();
 				foreach(var item in Itemlist.Where(item => item.IsActive()))
@@ -383,6 +396,9 @@ namespace Primes_Ultimate_Carry
 						case Database.ActiveItem.ItemType.Offensive :
 							tempmenu = off;
 							break;
+						case Database.ActiveItem.ItemType.OnHit :
+							tempmenu = onhit;
+							break;
 						default :
 							tempmenu = def;
 							break;
@@ -395,11 +411,54 @@ namespace Primes_Ultimate_Carry
 						case Database.ActiveItem.MenuType.Offensive :
 							AddOffensiveMenu(tempmenu, item);
 							break;
+						case Database.ActiveItem.MenuType.OnHit :
+							AddOnHitMenu(tempmenu, item);
+							break;
 					}
 
 				}
 				Game.OnGameUpdate += OnGameUpdate;
+				Game.OnGameSendPacket += Game_Spellblock;
 			}
+
+			private static int _spelldelay;
+
+			private static void Game_Spellblock(GamePacketEventArgs args)
+			{
+
+				if(args.PacketData[0] != Packet.C2S.Cast.Header)
+					return;
+				var decodedPacket = Packet.C2S.Cast.Decoded(args.PacketData);
+				if(decodedPacket.Slot.ToString() == "128" ||
+					decodedPacket.Slot.ToString() == "129" ||
+					decodedPacket.Slot.ToString() == "130" ||
+					decodedPacket.Slot.ToString() == "131")
+				{
+
+					if(Environment.TickCount - _spelldelay < 250)
+					{
+						args.Process = false;
+						return;
+					}
+					_spelldelay = Environment.TickCount;
+				
+					if (Itemlist.Where( item=> item.IsEnabled() && item.IsActive() && item.TypeItem == Database.ActiveItem.ItemType.OnHit && item.IsInInventory() ).Any(item => ShouldBlockSpell(item) && Orbwalker.GetPossibleTarget() != null) )					
+						args.Process = false;
+				}
+				
+			}
+
+			private static bool ShouldBlockSpell(Database.ActiveItem item)
+			{
+				if (PUC.Player.HasBuff("itemfrozenfist",true))
+					return true;
+				if(PUC.Player.HasBuff("lichbane",true))
+					return true;
+				if(PUC.Player.HasBuff("sheen",true))
+					return true;
+				return !item.IsReady();
+			}
+
 
 			private static void AddDefensiveMenu(Menu menu, Database.ActiveItem item)
 			{
@@ -415,6 +474,16 @@ namespace Primes_Ultimate_Carry
 				menu.SubMenu("act_item_" + item.Id).AddItem(new MenuItem("act_item_" + item.Id + "_sep0", "====== Conditions"));
 				menu.SubMenu("act_item_" + item.Id).AddItem(new MenuItem("act_item_" + item.Id + "_useCombo", "= Use in Combo").SetValue(true));
 				menu.SubMenu("act_item_" + item.Id).AddItem(new MenuItem("act_item_" + item.Id + "_useHarass", "= Use in Harass").SetValue(false));
+				menu.SubMenu("act_item_" + item.Id).AddItem(new MenuItem("act_item_" + item.Id + "_sep1", "========="));
+			}
+
+			private static void AddOnHitMenu(Menu menu, Database.ActiveItem item)
+			{
+				menu.AddSubMenu(new Menu(item.Name, "act_item_" + item.Id));
+				menu.SubMenu("act_item_" + item.Id).AddItem(new MenuItem("act_item_" + item.Id + "_sep0", "====== Block Spells for"));
+				menu.SubMenu("act_item_" + item.Id).AddItem(new MenuItem("act_item_" + item.Id + "_useCombo", "= Combo").SetValue(true));
+				menu.SubMenu("act_item_" + item.Id).AddItem(new MenuItem("act_item_" + item.Id + "_useHarass", "= Harass").SetValue(true));
+				menu.SubMenu("act_item_" + item.Id).AddItem(new MenuItem("act_item_" + item.Id + "_useLaneClear", "= LaneClear").SetValue(true));
 				menu.SubMenu("act_item_" + item.Id).AddItem(new MenuItem("act_item_" + item.Id + "_sep1", "========="));
 			}
 
@@ -442,7 +511,9 @@ namespace Primes_Ultimate_Carry
 				switch(item.TypeItem)
 				{
 					case Database.ActiveItem.ItemType.Buff:
-
+						break;
+					case Database.ActiveItem.ItemType.OnHit:
+						// Inside SpellBlock
 						break;
 					case Database.ActiveItem.ItemType.Cleanse:
 

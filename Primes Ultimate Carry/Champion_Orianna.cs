@@ -316,7 +316,7 @@ namespace Primes_Ultimate_Carry
 			if (args.PacketData[0] != Packet.C2S.Cast.Header) 
 				return;
 			var decodedPacket = Packet.C2S.Cast.Decoded(args.PacketData);
-			if (decodedPacket.Slot != SpellSlot.R) 
+			if (decodedPacket.Slot.ToString() != "131") 
 				return;
 			if(!EnemysinRange(R.Range,1,Ball.BallPosition))
 				args.Process = false;

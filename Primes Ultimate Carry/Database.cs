@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -25,66 +26,102 @@ namespace Primes_Ultimate_Carry
 					new List<Utility.Map.MapType> {sr, ha},
 					ActiveItem.ItemType.Cleanse,
 					ActiveItem.MenuType.Defensive),
+				
 				new ActiveItem("Quicksilver Sash",
 					3140,
 					new List<Utility.Map.MapType> {sr, tt, cs, ha},
 					ActiveItem.ItemType.Cleanse,
 					ActiveItem.MenuType.Defensive),
+			
 				new ActiveItem("Dervish Blade",
 					3137,
 					new List<Utility.Map.MapType> {sr, ha},
 					ActiveItem.ItemType.Cleanse,
 					ActiveItem.MenuType.Defensive),
+
 				new ActiveItem("Mikael's Crucible",
 					3222,
 					new List<Utility.Map.MapType> {sr, tt, cs, ha},
 					ActiveItem.ItemType.Cleanse,
 					ActiveItem.MenuType.Defensive),
+
 				new ActiveItem("Muramana",
 					3042,
 					new List<Utility.Map.MapType> {sr, ha},
 					ActiveItem.ItemType.Offensive,
 					ActiveItem.MenuType.Offensive),
+
 				new ActiveItem("Muramana",
 					3043,
 					new List<Utility.Map.MapType> {tt, cs},
 					ActiveItem.ItemType.Offensive,
 					ActiveItem.MenuType.Offensive),
+
 				new ActiveItem("Youmuu's Ghostblade",
 					3142,
 					new List<Utility.Map.MapType> {sr, tt, cs, ha},
 					ActiveItem.ItemType.Offensive,
 					ActiveItem.MenuType.Offensive),
+
 				new ActiveItem("Tiamat",
 					3077,
 					new List<Utility.Map.MapType> {sr, tt, cs, ha},
 					ActiveItem.ItemType.Offensive,
 					ActiveItem.MenuType.Offensive),
+
 				new ActiveItem("Ravenous Hydra",
 					3074,
 					new List<Utility.Map.MapType> {sr, tt, cs, ha},
 					ActiveItem.ItemType.Offensive,
 					ActiveItem.MenuType.Offensive),
+
 				new ActiveItem("Hextech Gunblade",
 					3146,
 					new List<Utility.Map.MapType> {sr, tt, cs, ha},
 					ActiveItem.ItemType.Offensive,
 					ActiveItem.MenuType.Offensive),
+
 				new ActiveItem("Bilgewater Cutlass",
 					3144,
 					new List<Utility.Map.MapType> {sr, tt, cs, ha},
 					ActiveItem.ItemType.Offensive,
 					ActiveItem.MenuType.Offensive),
+
 				new ActiveItem("Deathfire Grasp",
 					3128,
 					new List<Utility.Map.MapType> {sr, ha},
 					ActiveItem.ItemType.Offensive,
 					ActiveItem.MenuType.Offensive),
+
 				new ActiveItem("Blade of the Ruined King",
 					3153,
 					new List<Utility.Map.MapType> {sr, tt, cs, ha},
 					ActiveItem.ItemType.Offensive,
 					ActiveItem.MenuType.Offensive),
+
+				new ActiveItem("Trinity Force",
+					3078,
+					new List<Utility.Map.MapType> {sr, tt, cs, ha},
+					ActiveItem.ItemType.OnHit ,
+					ActiveItem.MenuType.OnHit ),
+
+				new ActiveItem("Sheen",
+					3057,
+					new List<Utility.Map.MapType> {sr, tt, cs, ha},
+					ActiveItem.ItemType.OnHit,
+					ActiveItem.MenuType.OnHit),
+
+				new ActiveItem("Lich Bane",
+					3100,
+					new List<Utility.Map.MapType> {sr, tt, cs, ha},
+					ActiveItem.ItemType.OnHit,
+					ActiveItem.MenuType.OnHit),
+
+				new ActiveItem("Iceborn Gauntlet",
+					3025,
+					new List<Utility.Map.MapType> {sr, tt, cs, ha},
+					ActiveItem.ItemType.OnHit,
+					ActiveItem.MenuType.OnHit),
 			};
 		}
 
@@ -4858,12 +4895,37 @@ namespace Primes_Ultimate_Carry
 					if (Orbwalker.CurrentMode == Orbwalker.Mode.Harass)
 						return PUC.Menu.Item("act_item_" + Id + "_useHarass").GetValue<bool>();
 				}
+				if(TypeItem == ItemType.OnHit )
+				{
+					if(Orbwalker.CurrentMode == Orbwalker.Mode.Combo)
+						return PUC.Menu.Item("act_item_" + Id + "_useCombo").GetValue<bool>();
+					if(Orbwalker.CurrentMode == Orbwalker.Mode.Harass)
+						return PUC.Menu.Item("act_item_" + Id + "_useHarass").GetValue<bool>();
+					if(Orbwalker.CurrentMode == Orbwalker.Mode.LaneClear)
+						return PUC.Menu.Item("act_item_" + Id + "_useLaneClear").GetValue<bool>();	
+				}
+
 				return false;
+			}
+
+			public bool IsInInventory()
+			{
+				return Items.HasItem(Id);
 			}
 
 			public bool IsReady()
 			{
 				return Items.CanUseItem(Id);
+			}
+
+			public bool IsonCooldown()
+			{
+				foreach(var slot in ObjectManager.Player.InventoryItems.Where(slot => slot.Id == (ItemId)Id))
+				{Chat.Print( slot.Charges.ToString()) ;
+				Chat.Print(slot.Stacks.ToString());
+					return true;
+				}
+				return true;
 			}
 
 			public void CastItem()
@@ -4893,6 +4955,7 @@ namespace Primes_Ultimate_Carry
 				Heal,
 				Buff,
 				Cleanse,
+				OnHit,
 			}
 
 			internal enum MenuType
@@ -4901,6 +4964,7 @@ namespace Primes_Ultimate_Carry
 				Offensive,
 				DefensiveSupported,
 				Defensive,
+				OnHit,
 			}
 		}
 
