@@ -284,7 +284,7 @@ namespace Primes_Ultimate_Carry
 		{
 			if(!Q.IsReady() || !CanUseSpells)
 				return;
-			var target = TargetSelector.GetTarget(Q.Range);
+			var target = TargetSelector.GetTarget(Q2.Range);
 
 			if(target != null)
 			{
@@ -514,7 +514,7 @@ namespace Primes_Ultimate_Carry
 			if(Delay >= Environment.TickCount - DelayTick)
 				return;
 			var targetNormal = TargetSelector.GetTarget(Q.Range);
-			var targetExtended = TargetSelector.GetTarget(1100);
+			var targetExtended = TargetSelector.GetTarget(Q2.Range);
 			switch(Orbwalker.CurrentMode)
 			{
 				case Orbwalker.Mode.Combo:
