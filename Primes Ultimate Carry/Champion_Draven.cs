@@ -181,40 +181,36 @@ namespace Primes_Ultimate_Carry
 		{
 			if (AxeList.Count > 0)
 			{
-				Axe axe = null;
-				foreach (var obj in AxeList.Where(obj => axe == null || obj.CreationTime < axe.CreationTime))
-					axe = obj;
-				if (axe != null)
+				Axe[] axe = {null};
+				foreach (var obj in AxeList.Where(obj => axe[0] == null || obj.CreationTime < axe[0].CreationTime))
+					axe[0] = obj;
+				if (axe[0] != null)
 				{
-					var distanceNorm = Vector2.Distance(axe.Position.To2D(), PUC.Player.ServerPosition.To2D()) - PUC.Player.BoundingRadius;
-					var distanceBuffed = PUC.Player.GetPath(axe.Position).ToList().To2D().PathLength();
-					var canCatchAxeNorm = distanceNorm / PUC.Player.MoveSpeed + Game.Time < axe.EndTime;
-					var canCatchAxeBuffed = distanceBuffed / (PUC.Player.MoveSpeed + (5 * W.Level + 35) * 0.01 * PUC.Player.MoveSpeed + Game.Time) < axe.EndTime;
+					var distanceNorm = Vector2.Distance(axe[0].Position.To2D(), PUC.Player.ServerPosition.To2D()) - PUC.Player.BoundingRadius;
+					var distanceBuffed = PUC.Player.GetPath(axe[0].Position).ToList().To2D().PathLength();
+					var canCatchAxeNorm = distanceNorm / PUC.Player.MoveSpeed + Game.Time < axe[0].EndTime;
+					var canCatchAxeBuffed = distanceBuffed / (PUC.Player.MoveSpeed + (5 * W.Level + 35) * 0.01 * PUC.Player.MoveSpeed + Game.Time) < axe[0].EndTime;
 
 					if (!ChampionMenu.Item("useW_SpeecBuffCatch").GetValue<bool>())
 						if (!canCatchAxeNorm)
 						{
-							AxeList.Remove(axe);
+							AxeList.Remove(axe[0]);
 							return;
 						}
 
-					if ((axe.Position.Distance(Game.CursorPos) < ChampionMenu.Item("useCatchAxe_Combo").GetValue<Slider>().Value &&
-						Orbwalker.CurrentMode == Orbwalker.Mode.Combo) ||
-						(axe.Position.Distance(Game.CursorPos) < ChampionMenu.Item("useCatchAxe_Harass").GetValue<Slider>().Value &&
-						Orbwalker.CurrentMode == Orbwalker.Mode.Harass) ||
-						(axe.Position.Distance(Game.CursorPos) < ChampionMenu.Item("useCatchAxe_LaneClear").GetValue<Slider>().Value &&
-						Orbwalker.CurrentMode == Orbwalker.Mode.LaneClear ) ||
-						(axe.Position.Distance(Game.CursorPos) < ChampionMenu.Item("useCatchAxe_Lasthit").GetValue<Slider>().Value &&
-						Orbwalker.CurrentMode == Orbwalker.Mode.Lasthit))
-					{
-						if(canCatchAxeBuffed && !canCatchAxeNorm && W.IsReady() && !axe.Catching())
-							W.Cast();
-						Orbwalker.CustomOrbwalkMode = true;
-						Orbwalker.Orbwalk(GetModifiedPosition(axe.Position, Game.CursorPos, 49 + PUC.Player.BoundingRadius / 2), Orbwalker.GetPossibleTarget());
-					}
-
-
-
+					if ((!(axe[0].Position.Distance(Game.CursorPos) < ChampionMenu.Item("useCatchAxe_Combo").GetValue<Slider>().Value) ||
+					     Orbwalker.CurrentMode != Orbwalker.Mode.Combo) &&
+					    (!(axe[0].Position.Distance(Game.CursorPos) < ChampionMenu.Item("useCatchAxe_Harass").GetValue<Slider>().Value) ||
+					     Orbwalker.CurrentMode != Orbwalker.Mode.Harass) &&
+					    (!(axe[0].Position.Distance(Game.CursorPos) < ChampionMenu.Item("useCatchAxe_LaneClear").GetValue<Slider>().Value) ||
+					     Orbwalker.CurrentMode != Orbwalker.Mode.LaneClear) &&
+					    (!(axe[0].Position.Distance(Game.CursorPos) < ChampionMenu.Item("useCatchAxe_Lasthit").GetValue<Slider>().Value) ||
+					     Orbwalker.CurrentMode != Orbwalker.Mode.Lasthit)) 
+						return;
+					if(canCatchAxeBuffed && !canCatchAxeNorm && W.IsReady() && !axe[0].Catching())
+						W.Cast();
+					Orbwalker.CustomOrbwalkMode = true;
+					Orbwalker.Orbwalk(GetModifiedPosition(axe[0].Position, Game.CursorPos, 49 + PUC.Player.BoundingRadius / 2), Orbwalker.GetPossibleTarget());
 				}
 				
 			}
@@ -247,15 +243,11 @@ namespace Primes_Ultimate_Carry
 
 		private static void OnDeleteObject(GameObject sender, EventArgs args)
 		{
-			if(!sender.Name.Contains("Q_reticle_self"))
-			{
+			if (!sender.Name.Contains("Q_reticle_self"))
 				return;
-			}
 			foreach (var axe in AxeList.Where(axe => axe.NetworkId == sender.NetworkId))
 			{
 				AxeList.Remove(axe);
-				if(AxeList.Count == 0)
-					IsCatching = false;
 				return;
 			}
 		}
@@ -269,7 +261,7 @@ namespace Primes_Ultimate_Carry
 		{
 			if(!Q.IsReady())
 				return;
-			if(GetQStacks() > 0)
+			if(GetQStacks() > 0 || AxeList.Count > 2)
 				return;
 			var target = TargetSelector.GetAATarget();
 			if(target != null)
@@ -332,7 +324,7 @@ namespace Primes_Ultimate_Carry
 
 			public bool Catching()
 			{
-				return PUC.Player.Position.Distance(Position) < 49 + PUC.Player.BoundingRadius/2;
+				return PUC.Player.Position.Distance(Position) <= 49 + PUC.Player.BoundingRadius/2 + 50;
 			}
 		}
 	}

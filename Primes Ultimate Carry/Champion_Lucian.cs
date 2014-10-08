@@ -518,7 +518,7 @@ namespace Primes_Ultimate_Carry
 			switch(Orbwalker.CurrentMode)
 			{
 				case Orbwalker.Mode.Combo:
-					foreach(var enemy in PUC.AllHerosEnemy.Where(hero => hero.IsValidTarget(1100)))
+					foreach(var enemy in PUC.AllHerosEnemy.Where(hero => hero.IsValidTarget(Q2.Range)))
 					{
 						foreach(var obj in ObjectManager.Get<Obj_AI_Base>().Where(obj => obj.IsValidTarget(Q.Range)))
 						{
@@ -542,7 +542,7 @@ namespace Primes_Ultimate_Carry
 				case Orbwalker.Mode.Harass:
 					if(!ManamanagerAllowCast("ManaManager_Harass"))
 						return;
-					foreach(var enemy in PUC.AllHerosEnemy.Where(hero => hero.IsValidTarget(1100)))
+					foreach(var enemy in PUC.AllHerosEnemy.Where(hero => hero.IsValidTarget(Q2.Range)))
 					{
 						foreach(var obj in ObjectManager.Get<Obj_AI_Base>().Where(obj => obj.IsValidTarget(Q.Range)))
 						{
@@ -623,7 +623,7 @@ namespace Primes_Ultimate_Carry
 				case Orbwalker.Mode.LaneClear:
 					if(!ManamanagerAllowCast("ManaManager_LaneClear"))
 						return;
-					var allMinions = MinionManager.GetMinions(ObjectManager.Player.Position, W.Range - 100, MinionTypes.All, MinionTeam.NotAlly);
+					var allMinions = MinionManager.GetMinions(ObjectManager.Player.Position, W.Range, MinionTypes.All, MinionTeam.NotAlly);
 					var minion = allMinions.FirstOrDefault(minionn => minionn.IsValidTarget(W.Range) && HealthPrediction.LaneClearHealthPrediction(minionn, 500) > 0);
 					if(minion != null)
 					{
