@@ -284,13 +284,13 @@ namespace Primes_Ultimate_Carry
 		{
 			if(!Q.IsReady() || !CanUseSpells)
 				return;
-			var target = TargetSelector.GetTarget(Q2.Range);
+			var target = TargetSelector.GetTarget(Q.Range);
 
 			if(target != null)
 			{
 				if((target.IsValidTarget(Q.Range)))
 				{
-					Q.Cast(target, UsePackets());
+					Q.CastOnUnit(target, UsePackets());
 					UsedSkill();
 				}
 			}
@@ -304,7 +304,7 @@ namespace Primes_Ultimate_Carry
 			{
 				if(qCollisionChar is Obj_AI_Hero)
 				{
-					Q.Cast(qCollisionChar, UsePackets());
+					Q.CastOnUnit(qCollisionChar, UsePackets());
 					UsedSkill();
 					return;
 				}
@@ -312,7 +312,7 @@ namespace Primes_Ultimate_Carry
 				{
 					if(!(HitPosition(Q.GetPrediction(qCollisionChar).UnitPosition, i).Distance(Q2.GetPrediction(target).UnitPosition) < 35))
 						continue;
-					Q.Cast(qCollisionChar, UsePackets());
+					Q.CastOnUnit(qCollisionChar, UsePackets());
 					UsedSkill();
 					return;
 				}
@@ -518,49 +518,21 @@ namespace Primes_Ultimate_Carry
 			switch(Orbwalker.CurrentMode)
 			{
 				case Orbwalker.Mode.Combo:
-					foreach(var enemy in PUC.AllHerosEnemy.Where(hero => hero.IsValidTarget(Q2.Range)))
+					foreach(var obj in PUC.AllHerosEnemy.Where(hero => hero.IsValidTarget(Q2.Range)).SelectMany(enemy1 => ObjectManager.Get<Obj_AI_Base>().Where(obj => obj.IsValidTarget(Q.Range) && (obj.ServerPosition.To2D().Distance(PUC.Player.ServerPosition.To2D(), Q2.GetPrediction(enemy1).UnitPosition.To2D(), true) < 35) || obj is Obj_AI_Hero)))
 					{
-						foreach(var obj in ObjectManager.Get<Obj_AI_Base>().Where(obj => obj.IsValidTarget(Q.Range)))
-						{
-							if(obj is Obj_AI_Hero)
-							{
-								Q.Cast(obj, UsePackets());
-								DelayTick = Environment.TickCount;
-								return;
-							}
-							for(var i = 10; i < 1070 - Q.Range; i = i + 10)
-							{
-								if(!(HitPosition(Q.GetPrediction(obj).UnitPosition, i).Distance(Q.GetPrediction(enemy).UnitPosition) < 35))
-									continue;
-								Q.Cast(obj, UsePackets());
-								DelayTick = Environment.TickCount;
-								return;
-							}
-						}
+						Q.CastOnUnit(obj,UsePackets() );
+						DelayTick = Environment.TickCount;
+						return;
 					}
 					break;
 				case Orbwalker.Mode.Harass:
 					if(!ManamanagerAllowCast("ManaManager_Harass"))
 						return;
-					foreach(var enemy in PUC.AllHerosEnemy.Where(hero => hero.IsValidTarget(Q2.Range)))
+					foreach(var obj in PUC.AllHerosEnemy.Where(hero => hero.IsValidTarget(Q2.Range)).SelectMany(enemy1 => ObjectManager.Get<Obj_AI_Base>().Where(obj => obj.IsValidTarget(Q.Range) && (obj.ServerPosition.To2D().Distance(PUC.Player.ServerPosition.To2D(), Q2.GetPrediction(enemy1).UnitPosition.To2D(), true) < 35) || obj is Obj_AI_Hero)))
 					{
-						foreach(var obj in ObjectManager.Get<Obj_AI_Base>().Where(obj => obj.IsValidTarget(Q.Range)))
-						{
-							if(obj is Obj_AI_Hero)
-							{
-								Q.Cast(obj);
-								DelayTick = Environment.TickCount;
-								return;
-							}
-							for(var i = 10; i < 1070 - Q.Range; i = i + 10)
-							{
-								if(!(HitPosition(Q.GetPrediction(obj).UnitPosition, i).Distance(Q2.GetPrediction(enemy).UnitPosition) < 35))
-									continue;
-								Q.Cast(obj);
-								DelayTick = Environment.TickCount;
-								return;
-							}
-						}
+						Q.CastOnUnit(obj, UsePackets());
+						DelayTick = Environment.TickCount;
+						return;
 					}
 					break;
 				case Orbwalker.Mode.LaneClear:
