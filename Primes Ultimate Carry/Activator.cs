@@ -10,7 +10,6 @@ namespace Primes_Ultimate_Carry
 	class Activator
 	{
 		public static BuffType[] BuffnamesCC = { BuffType.Charm, BuffType.Fear, BuffType.Flee, BuffType.Snare, BuffType.Taunt, BuffType.Stun,BuffType.Slow };
-		public static BuffType[] BuffnamesExtendet = { BuffType.Suppression };
 		public static List<SummonerSpell> SummonerList = new List<SummonerSpell>();
 		public static bool ChampSupported = false;
 		public enum Summoner
@@ -60,10 +59,6 @@ namespace Primes_Ultimate_Carry
 			
 			defensivemenu.AddSubMenu(new Menu("PUC Debuff", "act_debuff"));		
 			foreach (var buffname in BuffnamesCC)
-			{
-				defensivemenu.SubMenu("act_debuff").AddItem(new MenuItem("act_debuff_" + buffname, "Anti " + buffname).SetValue(true));
-			}
-			foreach(var buffname in BuffnamesExtendet)
 			{
 				defensivemenu.SubMenu("act_debuff").AddItem(new MenuItem("act_debuff_" + buffname, "Anti " + buffname).SetValue(true));
 			}
@@ -526,9 +521,7 @@ namespace Primes_Ultimate_Carry
 						if(item.Id == 3137 || item.Id == 3139 || item.Id == 3140)
 							if(BuffnamesCC.Any(bufftype => PUC.Player.HasBuffOfType(bufftype) && PUC.Menu.Item("act_debuff_" + bufftype).GetValue<bool>() && CleanseIsDown()))
 								item.CastItem();
-						if(item.Id == 3137 ||  item.Id == 3140)
-							if(BuffnamesExtendet.Any(bufftype => PUC.Player.HasBuffOfType(bufftype) && PUC.Menu.Item("act_debuff_" + bufftype).GetValue<bool>() && CleanseIsDown()))
-								item.CastItem();
+
 						// Mikael's Crucible
 						if(item.Id == 3222)
 						{
