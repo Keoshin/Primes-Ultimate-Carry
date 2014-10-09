@@ -79,6 +79,7 @@ namespace Primes_Ultimate_Carry
 				return null;
 			if (!target.IsValidTarget(spell.Range + extrarange) || spell.GetPrediction(target).Hitchance < HitChance.High)
 				return null;
+			Chat.Print("castQ");
 			spell.Cast(target, UsePackets());
 			return target;
 		}
@@ -131,6 +132,9 @@ namespace Primes_Ultimate_Carry
 
 		public bool UsePackets()
 		{
+			// todo
+			// Tempfix Packets 4.18
+			return false;
 			return ChampionMenu.Item("Primes_Champion_Packets_active").GetValue<bool>();
 		}
 

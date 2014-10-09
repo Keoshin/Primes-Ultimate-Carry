@@ -117,9 +117,9 @@ namespace Primes_Ultimate_Carry
 
 		private void OnUpdate(EventArgs args)
 		{
+
 			if(ChampionMenu.Item("useR_KS").GetValue<bool>())
 			CastRks();
-
 			switch(Orbwalker.CurrentMode)
 			{
 				case Orbwalker.Mode.Combo:

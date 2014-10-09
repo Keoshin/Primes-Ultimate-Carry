@@ -11,7 +11,7 @@ namespace Primes_Ultimate_Carry
 	class Champion_Draven :Champion 
 	{
 		public static List<Axe> AxeList = new List<Axe>();
-		public static bool IsCatching;
+
 		public Champion_Draven()
 		{
 			SetSpells();
