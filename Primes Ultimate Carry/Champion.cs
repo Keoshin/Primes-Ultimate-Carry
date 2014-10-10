@@ -79,7 +79,6 @@ namespace Primes_Ultimate_Carry
 				return null;
 			if (!target.IsValidTarget(spell.Range + extrarange) || spell.GetPrediction(target).Hitchance < HitChance.High)
 				return null;
-			Chat.Print("castQ");
 			spell.Cast(target, UsePackets());
 			return target;
 		}
